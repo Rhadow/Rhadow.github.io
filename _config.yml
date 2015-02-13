@@ -1,0 +1,27 @@
+# Dependencies
+markdown            : redcarpet
+highlighter         : pygments
+
+# Permalinks
+permalink           : pretty
+relative_permalinks : true
+
+# Setup
+title               : Rhadow's Tech Note
+tagline             : 'Waves of JavaScript, front-end, and web development articles'
+description         : 'News, articles and reviews of a variety of web development frameworks and modules.'
+baseurl             : /
+
+author              : Howard Chang
+name                : 'Howard Chang'
+url                 : http://rhadow.github.io/
+
+paginate            : 5
+
+# Custom vars
+version             : 0.1.0
+github              :
+rep                 :
+twitter_username    : Rhadow3433
+github_username     : Rhadow
+facebook_username   : howard.chang.3194
