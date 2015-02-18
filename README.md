@@ -1,4 +1,4 @@
-# Rhadow.github.io
+# Rhadow's Tech Note
 
 Welcome to Rhadow's Tech note! This is a place to share my knowledge and experience on web development. The articles will be focus around any JavaScript related technology.
 
