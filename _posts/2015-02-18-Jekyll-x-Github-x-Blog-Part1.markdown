@@ -79,11 +79,11 @@ _posts 資料夾是用來存放所有 markdown 格式的部落格文章，Poole 
 2014-01-02-introducing-poole.md
 ```
 
-新增文章的方法很簡單，只需要另存一份 markdown 檔案到 _post 資料夾內，Jekyll 就會自動生成新頁面了。這邊比較需要注意的是檔案的命名規則，必須以 “年-月-日-文章標題” 的規則來命名。
+新增文章的方法很簡單，只需要另存一份 markdown 檔案到 _posts 資料夾內，Jekyll 就會自動生成新頁面了。這邊比較需要注意的是檔案的命名規則，必須以 “年-月-日-文章標題.md” 的規則來命名。
 
 [index.html](https://github.com/poole/poole/blob/master/index.html) 應該不用解釋太多，簡單來說就是初始呈現出來的網頁結構，[about.md](https://github.com/poole/poole/blob/master/about.md) 則是自我介紹頁面，雖然說是頁面，但它其實只是個 markdown 格式的文章偽裝成頁面罷了。
 
-[_config.yml](https://github.com/poole/poole/blob/master/_config.yml) 是很重要的檔案，部落格內的所有設定都必須到 `config.yml` 內去做，可設定的內容包含網址路徑，說明，markdown 的寫法等，詳細的內容可到 [Jekyll Configuration](http://jekyllrb.com/docs/configuration/) 查看。
+[_config.yml](https://github.com/poole/poole/blob/master/_config.yml) 是很重要的檔案，部落格內的所有設定都必須到 `config.yml` 內去做，可設定的內容包含網址路徑，網站描述，markdown 的寫法等，詳細的內容可到 [Jekyll Configuration](http://jekyllrb.com/docs/configuration/) 查看。
 
 最後，[_layout](https://github.com/poole/poole/tree/master/_layouts) 和 [_include](https://github.com/poole/poole/tree/master/_includes) 資料夾裡面裝著所有組成部落格的 boilerplate HTML 檔案：
 
