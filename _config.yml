@@ -1,5 +1,7 @@
 # Dependencies
 markdown            : redcarpet
+redcarpet:
+  extensions        : ["tables", "autolink", "strikethrough", "space_after_headers", "with_toc_data", "fenced_code_blocks"]
 highlighter         : pygments
 
 # Permalinks
@@ -8,7 +10,7 @@ relative_permalinks : true
 
 # Setup
 title               : Rhadow's Tech Note
-tagline             : 'Waves of JavaScript, front-end, and web development articles'
+tagline             : 'JavaScript, front-end, and web development articles'
 description         : 'News, articles and reviews of a variety of web development frameworks and modules.'
 baseurl             : /
 
@@ -20,8 +22,6 @@ paginate            : 5
 
 # Custom vars
 version             : 0.1.0
-github              :
-rep                 :
 twitter_username    : Rhadow3433
 github_username     : Rhadow
 facebook_username   : howard.chang.3194

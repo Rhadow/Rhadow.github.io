@@ -9,7 +9,7 @@ comments   : true
 signature  : true
 ---
 
-由於身邊大部份的同事們都擁有屬於自己的部落格，用來分享技術或記錄自己的學習過程等，讓不想落後別人的我有了很大的動力來製作屬於自己的部落格。本篇主要是記錄 Jekyll 部落格的架構，Part 2 會分享一些功能的實作，更詳細的教學可參考 [Jekyll 官網](http://jekyllrb.com/)。
+由於身邊大部份的同事們都擁有屬於自己的部落格，用來分享技術或記錄自己的學習過程等，讓我有了很大的動力來製作屬於自己的部落格。本篇主要是記錄 Jekyll 部落格的架構，Part 2 會分享一些功能的實作，更詳細的教學可參考 [Jekyll 官網](http://jekyllrb.com/)。
 
 ## Jekyll 簡介
 Jekyll 是一個部落格平台，主要的功能是能夠讓人們可以在 Github 上使用靜態的 HTML 頁面建置部落格。使用者使用 markdown 語法撰寫部落格文章，Jekyll 則會透過動態模板 (Template) 將文章轉為靜態 HTML 網頁。同時 Github Pages 也提供方便的 Host 功能，只需要將你的專案存在 Github 的儲存庫 (Repository) 中，就能夠讓 Github 來協助我們作 Host 的動作，不用再費其他心思。
