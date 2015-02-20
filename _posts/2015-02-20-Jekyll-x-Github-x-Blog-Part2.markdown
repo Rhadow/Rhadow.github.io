@@ -186,7 +186,7 @@ end
 </table>
 ```
 
-在使用 `jekyll build` 和 `jekyll serve` 後，`tag_gen.rb` 會在 `_site` 的資料夾內產生一個叫做 `tags` 的資料夾。在 `tags` 資料夾內會有多個依照標籤命名的資料夾，裡面的內容則是已經經過標籤分類後的文章總覽靜態頁面。這方法雖然不使用其他的外掛，但每次有新的標籤時必須得在本地先跑一次 'jekyll build' 並把 `_site` 內的 `tags` 資料夾拉到根目錄再 push，Github 才會抓到這些頁面。可以參考 [我的專案頁面](https://github.com/Rhadow/Rhadow.github.io) 來深入了解。
+在使用 `jekyll build` 和 `jekyll serve` 後，`tag_gen.rb` 會在 `_site` 的資料夾內產生一個叫做 `tags` 的資料夾。在 `tags` 資料夾內會有多個依照標籤命名的資料夾，裡面的內容則是已經經過標籤分類後的文章總覽靜態頁面。這方法雖然不使用其他的外掛，但每次有新的標籤時必須得在本地先跑一次 'jekyll serve' 並把新產生的 `_site` 內的 `tags` 資料夾拉到根目錄取代原本的 `tags` 資料夾再 push，Github 才會抓到這些頁面。可以參考 [我的專案頁面](https://github.com/Rhadow/Rhadow.github.io) 來深入了解。
 
 ## 目錄頁與標籤雲
 目錄頁的製作其實只是利用 liquid template 的語法來將所有文章依照你喜歡的格式來做輸出，我的範例如下：
