@@ -11,7 +11,7 @@ signature  : true
 
 這篇是 [Jekyll x Github x Blog (Part1)](http://rhadow.github.io/2015/02/18/Jekyll-x-Github-x-Blog-Part1/) 的接續文章。在上一篇文章中，我大略的介紹了Jekyll 部落格的架構，這篇將主要探討如何在已建立的 Jekyll 部落格內加入一些簡易功能。
 
-***小小的注意事項：如果要使用文章內的程式碼內容，請將 `{.%` 與 `{.{` 中間的 `.` 去掉再用。***
+***注意：如果要使用文章內的程式碼內容，請將 `{.%` 與 `{.{` 中間的 `.` 去掉再用。***
 
 ## _config.yml 基本設定
 `config.yml` 的檔案內容決定了 Jekyll 部落格內的所有設定，包括網址路徑，網站描述，markdown 的寫法等，以下是我的部落格的一些 `_config.yml` 內容：
