@@ -176,7 +176,7 @@ Flexbox 預設會將所有 Flex item 都排列在同一排，此屬性可讓 fle
 
 ### flex-basis
 
-此屬性會依照 `flex-direction` 定義 item 預設的寬度或高度。
+此屬性會依照 `flex-direction` 定義 item 最小的寬度或高度，有點類似 `min-width`。這個屬性可以翻譯成：當需要伸縮時，依照 `flex-grow` 或 `Flex-shrink` 的值來伸縮，但是寬度或高度不能小於 X px 或 em。
 
 ```css
 .item {
@@ -186,7 +186,7 @@ Flexbox 預設會將所有 Flex item 都排列在同一排，此屬性可讓 fle
 
 ### flex
 
-`flex` 屬性是 `flex-grow`，`flex-shrink` 和 `flex-wrap` 的縮寫，第二和第三個參數 (`flex-shrink` 和 `flex-wrap`) 可不給。預設值為 `0 1 auto`。
+`flex` 屬性是 `flex-grow`，`flex-shrink` 和 `flex-basis` 的縮寫，第二和第三個參數 (`flex-shrink` 和 `flex-basis`) 可不給。預設值為 `0 1 auto`。
 
 ```css
 .item {
