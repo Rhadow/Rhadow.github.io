@@ -263,13 +263,15 @@ module: {
 
 ```js
 plugins: [
-    new webpack.HotModuleReplacementPlugin(),
+    //new webpack.HotModuleReplacementPlugin(),
     new webpack.NoErrorsPlugin()
 ]
 ```
 
 這邊的 `webpack.NoErrorsPlugin()` 是選擇性的，主要的功能是當更改完的程式碼有語法錯誤時不要重新整理。
 當錯誤修好後，畫面會自動重新整理。
+
+`new webpack.HotModuleReplacementPlugin()` 則是當不使用 webpack-dev-server 的 inline-mode 時才需要加入。本例是使用 inline-mode，你可以試著把註解掉的部分加回程式裡，當元件在做更新時，會出現 `Uncaught RangeError: Maximum call stack size exceeded` 的錯誤訊息。inline-mode 詳情請參考 [webpack-dev-server 說明](http://webpack.github.io/docs/webpack-dev-server.html)。
 
 現在執行 `npm run dev` 後再一次做本段落最開始的實驗，就會發現更改程式碼後，畫面不會再回到首頁了。
 
