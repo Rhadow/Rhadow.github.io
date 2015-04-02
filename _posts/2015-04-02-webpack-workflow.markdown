@@ -231,7 +231,7 @@ module.exports = config;
 如果你有跟著以上每一步做的話，程式跑起來後應該會有一個按鈕和 "Hello, I'm TestOne Component" 的字出現在畫面上。
 重複點擊按鈕，"Hello, I'm TestOne Component" 和 "Hello, I'm TestTwo Component" 會輪流出現在畫面上。
 
-現在，請將畫面切到秀出 "Hello, I'm TestTwo Component" ，並到 `TestTwo.js` 將 "Hello, I'm TestTwo Component" 改為 "Hello" 後儲存。完成後，會發現瀏覽器畫面會回到最初的 "Hello, I'm TestOne Component"，這是因為 LiveReload 會重新整理畫面並將 React 元件的 state 重設回到初始值。
+現在請將畫面切到顯示 "Hello, I'm TestTwo Component" ，並到 `TestTwo.js` 將 "Hello, I'm TestTwo Component" 改為 "Hello" 後儲存。完成後，會發現瀏覽器畫面會回到最初的 "Hello, I'm TestOne Component"，這是因為 LiveReload 會重新整理畫面並將 React 元件的 state 重設回到初始值。
 
 react-hot-loader 的功用就是在不清除 state 的狀態下更新畫面，讓我們趕快來看看該如何達成這個效果吧。
 
