@@ -148,6 +148,10 @@
         float: left;
     }
 }
+.theme-base-chocolate .social-plugins {
+    margin-top: 10px;
+    vertical-align: middle;
+}
 /* End of index css */
 /* Tag summary */
 
