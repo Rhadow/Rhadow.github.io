@@ -20,20 +20,18 @@
   <meta name="description"
         content="Waves of JavaScript, front-end, and web development articles. News, articles and reviews of a variety of web development frameworks and modules.">
 
-  
-
   {% if page.title == "Home" %}
     <meta property="og:title" content="Rhadow's Tech Note" >
     <meta property="og:type" content="article" />
     <meta property="og:url" content="http://rhadow.github.io">
-    <meta property="og:image" content="http://rhadow.github.io/public/favicon.ico">
+    <meta property="og:image" content="http://rhadow.github.io/public/logo.png">
     <meta property="og:description"
         content="Waves of JavaScript, front-end, and web development articles. News, articles and reviews of a variety of web development frameworks and modules." >
   {% else %}
     <meta property="og:title" content="{{ page.title }}" >
     <meta property="og:type" content="article" />
     <meta property="og:url" content="http://rhadow.github.io{{ page.url }}">
-    <meta property="og:image" content="http://rhadow.github.io/public/favicon.ico">
+    <meta property="og:image" content="http://rhadow.github.io/public/logo.png">
     <meta property="og:description"
         content="{{ page.content | truncatewords: 20 }}" >
   {% endif %}
