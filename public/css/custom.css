@@ -96,6 +96,9 @@
 /* End of Navbar */
 /* Index css */
 
+.theme-base-chocolate .post-info, .post-info-detail {
+    margin-bottom: 10px;
+}
 .theme-base-chocolate .post-info, .theme-base-chocolate .post-info a {
     color: #9a9a9a;
     font-size: .75rem;
@@ -147,10 +150,6 @@
     .theme-base-chocolate .newer {
         float: left;
     }
-}
-.theme-base-chocolate .social-plugins {
-    margin-top: 10px;
-    vertical-align: middle;
 }
 /* End of index css */
 /* Tag summary */
