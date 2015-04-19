@@ -8,16 +8,16 @@ title: Home
   <div class="post">
     <h1 class="post-title">
       <a href="{{ post.url }}">
-        {{ post.title }}  
+        {{ post.title }}
         {% if post.subtitle %}
         <p class="post-subtitle">
             {{ post.subtitle }}
         </p>
-        {% endif %}     
+        {% endif %}
       </a>
     </h1>
     <div class="post-info">
-      <span class="post-date">Posted by {{ post.author }} on {{ post.date | date: "%B %-d, %Y" }}</span>        
+      <span class="post-date">Posted by {{ post.author }} on {{ post.date | date: "%B %-d, %Y" }}</span>
       <span class="fa-stack fa-sm">
           <i class="fa fa-tags fa-stack-1x"></i>
       </span>
@@ -27,8 +27,16 @@ title: Home
             <i class="fa fa-comments fa-stack-1x"></i>
         </span>
         <a href="http://rhadow.github.com{{ post.url }}#disqus_thread" data-disqus-identifier="{{ post.url }}"></a>
-      </div>  
-    </div>      
+      </div>
+      <div
+        class="fb-like social-plugins"
+        data-href="http://rhadow.github.com{{ post.url }}"
+        data-layout="standard"
+        data-action="like"
+        data-show-faces="true"
+        data-share="true">
+      </div>
+    </div>
   </div>
   {% endfor %}
 </div>
