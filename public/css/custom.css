@@ -238,7 +238,7 @@
     font-size: 2.2rem;
     color: #3f4551;
 }
-.theme-base-chocolate::selection {
+.theme-base-chocolate ::selection {
     color: white;
     background-color: #bf4d28;
 }

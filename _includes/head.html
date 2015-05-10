@@ -13,26 +13,28 @@
   <meta name="copyright" content="Howard Chang">
   <meta name="google-site-verification" content="Y6EHO_vACb33JR6CLegTUED-tf0hwqt3auuO2yHTwwg" />
   <meta name="keywords"
-        content="ReactJS,Flux,AngularJS,CSS,Git,HTML5,JavaScript,Front end engineering,SublimeText,Node,Unit Testing,前端工程研究">
+        content="ReactJS,Flux,AngularJS,CSS,Git,HTML5,JavaScript,Front end engineering,SublimeText,Node,Unit Testing,前端工程研究, ImmutableJS, Jest, 教學">
 
   <link rel="contents" title="Archive" href="/Archive">
   <link rel="start" title="Rhadow's Tech Note" href="/">
-  <meta name="description"
-        content="Waves of JavaScript, front-end, and web development articles. News, articles and reviews of a variety of web development frameworks and modules.">
 
-  {% if page.layout == "Post" %}
+  {% if page.signature == true %}
     <meta property="og:title" content="{{ page.title }}" >
     <meta property="og:type" content="article" />
     <meta property="og:url" content="http://rhadow.github.io{{ page.url }}">
     <meta property="og:image" content="http://rhadow.github.io/public/logo.png">
     <meta property="og:description"
         content="{{ page.content | truncatewords: 20 }}" >
-  {% else %}    
+    <meta name="description"
+        content="{{ page.content | truncatewords: 20 }}" >
+  {% else %}
     <meta property="og:title" content="Rhadow's Tech Note" >
     <meta property="og:type" content="article" />
     <meta property="og:image" content="http://rhadow.github.io/public/logo.png">
     <meta property="og:description"
         content="Waves of JavaScript, front-end, and web development articles. News, articles and reviews of a variety of web development frameworks and modules." >
+    <meta name="description"
+        content="Waves of JavaScript, front-end, and web development articles. News, articles and reviews of a variety of web development frameworks and modules.">
   {% endif %}
 
   <title>
