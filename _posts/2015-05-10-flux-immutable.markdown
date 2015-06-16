@@ -91,21 +91,21 @@ console.log(map2.getIn(['birthday', 'year'])); // 2015
 Immutable.js 的設計靈感其實有一部分來自於 Clojure, Scala, Haskell 這些函數式編程語言。因此 Immutable.js 裡有個特殊的結構叫 Sequence。Map 和 List 都可以透過 `toSeq()` 這個方法來轉換成 Sequence。 Sequence 有兩個很重要的特性：
 
 * Immutable (不可變)
-* Lazy (懶惰)
+* Lazy (延遲)
 
-Immutable 我相信你應該很了解它的意思了，但懶惰這特性是怎麼回事？我們直接來看看官方提供的例子好了：
+Immutable 我相信你應該很了解它的意思了，但延遲這特性是怎麼回事？我們直接來看看官方提供的例子好了：
 
 ```js
 var oddSquares = Immutable.Seq.of(1,2,3,4,5,6,7,8)
   .filter(x => x % 2).map(x => x * x);
 ```
 
-如果上面的例子是一般的 List 而不是 Sequence 的話，oddSquares 其實是等於 `[1,9,25,49]`。但因為 Sequence 很懶惰，在你要求它給你值之前他是不會把結果計算出來的。
+如果上面的例子是一般的 List 而不是 Sequence 的話，oddSquares 其實是等於 `[1,9,25,49]`。但因為 Sequence 擁有延遲的特性，在你要求它給你值之前他是不會把結果計算出來的。
 
 ```js
 console.log(oddSquares.get(1)); // 9
 ```
-當我們透過以上程式碼向它取值時，oddSquares 才會把 9 給我們。特別注意的是，它也不會繼續做後面 25 與 49 的運算。因為懶惰的關係，Sequence 只會做到我們向它要求的地方。也因此，程式其實省去了很多不必要的運算，這也是為什麼 Immutable.js 會優化速度的原因之一。
+當我們透過以上程式碼向它取值時，oddSquares 才會把 9 給我們。特別注意的是，它也不會繼續做後面 25 與 49 的運算。因為延遲的關係，Sequence 只會做到我們向它要求的地方。也因此，程式其實省去了很多不必要的運算，這也是為什麼 Immutable.js 會優化速度的原因之一。
 
 為了理解，我們再來看一個官方提供的例子：
 
@@ -131,7 +131,7 @@ Range 結構本身就是 Sequence，所以我們不需要特地使用 `toSeq()` 
 
 最後再透過 `reduce()` 相乘得到 1006008。
 
-以上這些運算如果不是透過 Sequence 懶惰這個特性，在 `take(2)` 前的每一步都有大量的運算，電腦根本無法負荷。
+以上這些運算如果不是透過 Sequence 延遲這個特性，在 `take(2)` 前的每一步都有大量的運算，電腦根本無法負荷。
 
 ## 總結
 
