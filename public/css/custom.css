@@ -151,6 +151,9 @@
         float: left;
     }
 }
+.theme-base-chocolate .post-tag {
+    margin-bottom: 16px;
+}
 /* End of index css */
 /* Tag summary */
 
