@@ -26,10 +26,10 @@ var secondStore = {
 
 // Redux 的單一 store
 var state = {
-    firstStore: {
+    firstState: {
         first: 1
     },
-    secondStore: {
+    secondState: {
         second: 2
     }
 }
@@ -208,7 +208,7 @@ console.log(state);
 
 目前官方的範例都是使用 container pattern。簡單來說，就是有一個只管接收 props 並 render 的笨元件，與包覆在笨元件外圍負責管理資料並將需要的資料傳給笨元件的 container 元件。而負責與 redux 交流的正是這個 container 元件。
 
-[react-redux](https://github.com/gaearon/react-redux) 提供了 `Provider` 與 `Connector` 這兩個元件。
+[react-redux](https://github.com/gaearon/react-redux) 提供了 `Provider` 元件與 `connect` 方法。
 
 `Provider` 是使用在應用程式的根元件內，負責將唯一的 store 傳下去給其他子元件。
 
@@ -227,8 +227,9 @@ class App extends Component {
 }
 ```
 
-而 `Connector` 提供了一個 `select` 的 props。
-我們可以透過 `select` 來選取這個 container 需要 state 的哪一部分。
+而 `connect` 會接收一個函示當參數並回傳一個 Component class。
+`connect` 的功用是將 dispatch 方法透過 props 的方式加到元件中。
+我們可以透過這個函式來選取這個 container 需要 state 的哪一部分。
 
 例如在 counter container 中，我們可以只選取 state 裡的 counter 部分：
 
@@ -237,17 +238,16 @@ function select(state) {
   return { counter: state.counter };
 }
 
-export default class CounterApp {
+class CounterApp {
     render() {
+        const { counter, dispatch } = this.props;
         return (
-            <Connector select={select}>
-                {({ counter, dispatch }) =>
-                    <Counter counter={counter} />
-                }
-            </Connector>
+            <Counter counter={counter} />
         );
     }
 }
+
+export default connect(select)(CounterApp)
 ```
 
 當然你也可以不用 `select`，那麼在 `Connector` 裡接收到的就是整個應用程式的完整 state 了。
