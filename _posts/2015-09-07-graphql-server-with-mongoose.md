@@ -2,7 +2,7 @@
 layout     : post
 title      : "如何實作 GraphQL API"
 subtitle   : "使用 GraphQL 與 Mongoose 建立一個簡易的 Node 伺服器並提供基本 API 功能"
-date       : 2015-09-07 22:17:38
+date       : 2015-09-07
 author     : "Rhadow"
 tags       : GraphQL NodeJS MongoDB
 comments   : true
