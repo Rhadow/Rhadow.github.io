@@ -1,3 +1,9 @@
+@font-face {
+  font-family: 'Abril Fatface';
+  font-style: normal;
+  font-weight: 400;
+  src: url(./fonts/AbrilFatface-Regular.otf) format('opentype');
+}
 /* chocolate Sidebar */
 
 .theme-base-chocolate .sidebar {
