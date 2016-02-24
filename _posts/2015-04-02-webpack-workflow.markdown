@@ -11,20 +11,22 @@ signature  : true
 
 Webpack 包含了許多好用的 loader 可以協助開發者在開發過程中省去不少麻煩。而 LiveReload 更是節省時間不可或缺的功能。本篇將透過一個簡單的範例介紹如何使用 webpack-dev-server 與 react-hot-loader 來讓開發 React 專案更為快速方便。如果你是剛開始使用 Webpack 的開發者，建議先讀完 [Webpack howto](https://github.com/petehunt/webpack-howto) 或 [如何使用 Webpack 模組整合工具](http://rhadow.github.io/2015/03/23/webpackIntro/) 熟悉 Webpack 後再來使用各式各樣的 loader。
 
+**2016-02-24 更新： 由於版本問題造成大家無法成功使用文章中的程式碼感到抱歉，以下已將版本號補上。最新的開發環境建議參考 [react-transform-boilerplate](https://github.com/gaearon/react-transform-boilerplate)。**
+
 ## webpack-dev-server 與 react-hot-loader 是什麼
 
 [webpack-dev-server](https://github.com/webpack/webpack-dev-server) 是個小型的 node.js express server，主要用來跑專案內的檔案，同時提供 LiveReload 的功能。[react-hot-loader](https://github.com/gaearon/react-hot-loader) 則是可以在不改變 React 元件的 state 下，將更改過程式碼的元件直接更新到畫面上。
 
 ## 準備
 
-在專案目錄內透過 `npm install webpack webpack-dev-server react-hot-loader babel-loader --save-dev` 指令安裝 webpack，webpack-dev-server，react-hot-loader 和 babel-loader，並在專案目錄下加入檔案與資料夾並整理如以下結構:
+在專案目錄內先使用 `npm init` 產生 `package.json` 再透過 `npm install webpack@1.12.14 webpack-dev-server@1.14.1 react-hot-loader@1.3.0 babel-loader@5.4.0 react@0.13.3 --save-dev` 指令安裝 webpack，webpack-dev-server，react-hot-loader，react 和 babel-loader，並在專案目錄下加入檔案與資料夾並整理如以下結構:
 
   * /app
     * main.js
     * TestOne.js
     * TestTwo.js
   * /build
-    * bundle.js (會透過 webpack 自動生成) 
+    * bundle.js (會透過 webpack 自動生成)
     * index.html
   * package.json
   * webpack.config.js
@@ -224,7 +226,7 @@ var config = {
 module.exports = config;
 ```
 
-這樣就完成 LiveReload 的功能囉，各位可以到 [http://localhost:8080/](http://localhost:8080/) 檢查是否有正確跑起來，也可以試著在程式碼內做些改變，並觀察畫面是否有跟著變動。
+這樣就完成 LiveReload 的功能囉，各位可以在執行 `npm run dev` 後到 [http://localhost:8080/](http://localhost:8080/) 檢查是否有正確跑起來，也可以試著在程式碼內做些改變，並觀察畫面是否有跟著變動。
 
 ## 加入 react-hot-loader
 
@@ -255,7 +257,7 @@ module: {
         include: path.join(__dirname, 'app')
     }]
 },
-``` 
+```
 
 這部分要特別注意的地方是一定要加入 `include: path.join(__dirname, 'app')`，不然 webpack 會把 `node_modules` 內的 js 檔都透過 react-hot-loader 跑一遍，會因此導致 Cannot read property 'NODE_ENV' of undefined 錯誤造成程式無法正常運作。
 
