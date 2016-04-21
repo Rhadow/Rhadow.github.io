@@ -1,7 +1,7 @@
 ---
 layout     : post
 title      : "機器學習基石-第五、六講筆記"
-subtitle   : "證明 2D Perceptron 是可學的"
+subtitle   : "證明 2D PLA 是可以學習的演算法"
 date       : 2016-03-08
 author     : "Rhadow"
 tags       : Machine-Learning
