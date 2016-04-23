@@ -264,27 +264,24 @@ type Directions a b = Up a | Down b | Left a b | Right
 Elm 載入模組的方法非常簡單，假設我們有一個叫 `Html` 的模組並且我們想使用 `div` 這個函數時有以下幾種方法：
 
 ```elm
-{- Example 1.
-    想使用 div 時要這樣呼叫: Html.div
--}
+-- Example 1.
 import Html
-
-{- Example 2.
-    想使用 div 時要這樣呼叫: MyHtml.div
--}
+-- Example 2.
 import Html as MyHtml
-
-{- Example 3.
-    想使用 div 可以直接呼叫: div
-    但想使用其他函數時還是得加上命名空間: Html.span
--}
+--Example 3.
 import Html exposing (div)
-
-{- Example 4.
-    可直接呼叫任意在 Html 中的函數: div, span, text...
--}
+--Example 4.
 import Html exposing (..)
 ```
+
+在範例一中想使用 `div` 時要這樣呼叫: `Html.div`
+
+在範例二中想使用 `div` 時要這樣呼叫: `MyHtml.div`
+
+在範例三中想使用 `div` 可以直接呼叫: `div`，但想使用其他函數時還是得加上命名空間: `Html.span`
+
+在範例四中可直接呼叫任意在 Html 中的函數: `div`, `span`, `text`...
+
 
 輸出模組時只需要在檔案最開始加入:
 
