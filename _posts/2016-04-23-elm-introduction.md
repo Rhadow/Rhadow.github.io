@@ -266,10 +266,13 @@ Elm 載入模組的方法非常簡單，假設我們有一個叫 `Html` 的模�
 ```elm
 -- Example 1.
 import Html
+
 -- Example 2.
 import Html as MyHtml
+
 --Example 3.
 import Html exposing (div)
+
 --Example 4.
 import Html exposing (..)
 ```
