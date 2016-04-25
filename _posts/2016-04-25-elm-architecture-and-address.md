@@ -112,7 +112,7 @@ type Signal a
 
 ```
 
-在上例中可以發現 Signal 的內容可以是任何型別。讓我們來思考一下，最終的畫面是個會變動的 `Html` 型別，也就是 `Signal Html`。記得我們的 `view` 函數嗎？畫面是以 `model` 為基底，因此，也需要有一個 `Signal Model` 型別的變數。我們又透過 `update` 函數根據不同的 `Action` 來改變 `model`，所以最後還需要一個 `Signal Action` 型別的變數。如果你還是不太清楚 Signal 的寬念的話，可以看看這個 [視覺化 Signal](http://yang-wei.github.io/elmflux/#/mouseSignal) 的 Demo 
+在上例中可以發現 Signal 的內容可以是任何型別。讓我們來思考一下，最終的畫面是個會變動的 `Html` 型別，也就是 `Signal Html`。記得我們的 `view` 函數嗎？畫面是以 `model` 為基底，因此，也需要有一個 `Signal Model` 型別的變數。我們又透過 `update` 函數根據不同的 `Action` 來改變 `model`，所以最後還需要一個 `Signal Action` 型別的變數。如果你還是不太清楚 Signal 的觀念的話，可以看看這個 [視覺化 Signal](http://yang-wei.github.io/elmflux/#/mouseSignal) 的 Demo 
 
 
 由於我們開發的應用不可能都像這個計數器這麼簡單，因此，Elm 提供了一個特殊的方法使開發者能夠在複雜的結構下仍然能夠有效率的改動和保留這些 Signal 的狀態。它就是 `Mailbox (信箱)` 囉。
