@@ -26,6 +26,7 @@ type alias Model = Int
 
 init: Model
 init = 0
+
 ```
 
 ## Action
@@ -38,6 +39,7 @@ type Action
     = Increase
     | Decrease
     | NoOp
+
 ```
 
 這裡多了一個 `NoOp` (No Operation 縮寫) 作為預設行為，至於為什麼要有這個 Action 會在接下來的內容裡提到。另外，如果你曾經使用過 Redux 架構的話，你會發現這與 Redux 中的 `actionTypes` 很類似。
@@ -54,6 +56,7 @@ update action model =
         NoOp -> model
         Increase -> model + 1
         Decrease -> model - 1
+
 ```
 
 `update` 的型別定義為 `Action -> Model -> Model` ，代表著接收一個 `Action` 與原本的 `Model`。在經過我們設定的邏輯後，進而產生一個最新的 `Model` 給我們。很直覺吧！
@@ -72,6 +75,7 @@ view model =
         , span [] [text (toString model)]
         , button [] [ text "+"]
         ]
+
 ```
 
 目前的 `view` 的型別定義也很直觀，接受資料並根據內容產生出畫面，在這個例子中就是計數器目前的算到的值。
@@ -84,6 +88,7 @@ view model =
 
 main: Html
 main = view init
+
 ```
 
 到目前為止的程式碼如下，有興趣的讀者可將程式碼複製貼上到官方提供的[線上編譯器](http://elm-lang.org/try)測試:
@@ -104,9 +109,10 @@ Signal 其實就是一個會隨著時間改變的變數，你也可以把它想�
 ```elm
 
 type Signal a
+
 ```
 
-在上例中可以發現 Signal 的內容可以是任何型別。讓我們來思考一下，最終的畫面是個會變動的 `Html` 型別，也就是 `Signal Html`。記得我們的 `view` 函數嗎？畫面是以 `model` 為基底，因此，也需要有一個 `Signal Model` 型別的變數。我們又透過 `update` 函數根據不同的 `Action` 來改變 `model`，所以最後還需要一個 `Signal Action` 型別的變數。
+在上例中可以發現 Signal 的內容可以是任何型別。讓我們來思考一下，最終的畫面是個會變動的 `Html` 型別，也就是 `Signal Html`。記得我們的 `view` 函數嗎？畫面是以 `model` 為基底，因此，也需要有一個 `Signal Model` 型別的變數。我們又透過 `update` 函數根據不同的 `Action` 來改變 `model`，所以最後還需要一個 `Signal Action` 型別的變數。如果你還是不太清楚 Signal 的寬念的話，可以看看這個 [視覺化 Signal](http://yang-wei.github.io/elmflux/#/mouseSignal) 的 Demo 
 
 
 由於我們開發的應用不可能都像這個計數器這麼簡單，因此，Elm 提供了一個特殊的方法使開發者能夠在複雜的結構下仍然能夠有效率的改動和保留這些 Signal 的狀態。它就是 `Mailbox (信箱)` 囉。
@@ -121,6 +127,7 @@ type alias Mailbox a =
     { address : Address a
     , signal : Signal a
     }
+
 ```
 
 當我們想要修改某個 Signal 內部的值時，必須明確的告知 Elm 這個 Signal 所在的地址，這也就是 `address` 的由來。官方提供了 [mailbox](http://package.elm-lang.org/packages/elm-lang/core/3.0.0/Signal#mailbox) 這個函數來讓我們快速建立起一個信箱。需要特別注意的是 `mailbox` 是小寫的才是函數，大寫的 `Mailbox` 是型別喔。
@@ -133,6 +140,7 @@ type alias Mailbox a =
 
 actionMailbox: Signal.Mailbox Action
 actionMailbox = Signal.mailbox NoOp
+
 ```
 
 我們透過 `Signal.mailbox` 建立起了專屬 `Action` 型別的信箱，這裡使用了當初設定的 `NoOp` 作為初始值。這樣我們需要的 `Signal Action` 就可以透過 `actionMailbox.signal` 來取得，並透過專屬的 `actionMailbox.address` 來更新它。
@@ -144,6 +152,7 @@ actionMailbox = Signal.mailbox NoOp
 
 modelSignal: Signal Model
 modelSignal = Signal.foldp update init actionMailbox.signal
+
 ```
 
 這短短的一行程式碼是將整個程式串接起來的核心。[foldp](http://package.elm-lang.org/packages/elm-lang/core/3.0.0/Signal#foldp) (fold from past 的簡寫) 類似於 JavaScript 中的 `reduce`，會將我們提供的 Signal (本例中為 `actionMailbox.signal`) 中的值取出並透過同樣是我們自定的 `update` 函數更新 model 的狀態。而 `init` 則是 model 的初始值。
@@ -160,6 +169,7 @@ view address model =
         [ button [onClick address Decrease] [ text "-" ]
         , span [] [text (toString model)]
         , button [onClick address Increase] [ text "+"]
+
 ```
 
 我們多新增了一個型別為 `Signal.Address Action` 的變數。別被它的怪異長相嚇到，其實這只是從 `Signal` 模組裡取出 `Address` 這個型別而已。而這個 `Address` 型別又需要另一個型別變數來完成 (在本例就是 `Action`) 才變得這麼嚇人的。假設今天我們在載入模組時使用 `import Signal exposing (Address)` 的話，它的型別定義就會是 `Address Action -> Model -> Html`，是不是親民一點了呢？
@@ -174,6 +184,7 @@ view address model =
 
 main: Signal Html
 main = Signal.map (view actionMailbox.address) modelSignal
+
 ```
 
 最終完成的程式碼如下，一樣歡迎大家複製貼上到 [elm-lang.org/try](elm-lang.org/try) 實驗看看：

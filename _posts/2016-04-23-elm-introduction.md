@@ -308,6 +308,6 @@ else
 
 ## 結語
 
-大家都知道前端的變動非常的快，但在了解 Elm 的一些基本概念後，你會發現前端的改動和 Elm 所前進的方向是相同的。例如：Facebook 推出的 ImmutableJS，單一資料流的 Redux，越來越多人關注的 Reactive Programming 等等都已經是 Elm 的基本配備 (是的，Elm 有內建類似 Stream 的東西，叫做 [Signal](http://elm-lang.org/guide/reactivity))。 當然，Elm 也是有它的弱勢，像是目前不支援 Server Side Rendering 以及社群太小還沒太多有用的套件。
+大家都知道前端的變動非常的快，但在了解 Elm 的一些基本概念後，你會發現前端的改動和 Elm 所前進的方向是相同的。例如：Facebook 推出的 ImmutableJS，單一資料流的 Redux，越來越多人關注的 Reactive Programming 等等都已經是 Elm 的基本配備 (是的，Elm 有內建類似 Observables 的東西，叫做 [Signal](http://elm-lang.org/guide/reactivity))。 當然，Elm 也是有它的弱勢，像是目前不支援 Server Side Rendering 以及社群太小還沒太多有用的套件。
 
 最後個人的一點小心得：函數式編程語言有別於我們所習慣的寫程式方法，但有時候如果打開心胸去學習這種非主流的思考方式時，也會幫助你在你的程式生涯裡更上一層樓喔。
