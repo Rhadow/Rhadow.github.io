@@ -9,7 +9,7 @@ comments   : true
 signature  : true
 ---
 
-Webpack 包含了許多好用的 loader 可以協助開發者在開發過程中省去不少麻煩。而 LiveReload 更是節省時間不可或缺的功能。本篇將透過一個簡單的範例介紹如何使用 webpack-dev-server 與 react-hot-loader 來讓開發 React 專案更為快速方便。如果你是剛開始使用 Webpack 的開發者，建議先讀完 [Webpack howto](https://github.com/petehunt/webpack-howto) 或 [如何使用 Webpack 模組整合工具](http://rhadow.github.io/2015/03/23/webpackIntro/) 熟悉 Webpack 後再來使用各式各樣的 loader。
+Webpack 包含了許多好用的 loader 可以協助開發者在開發過程中省去不少麻煩。而 LiveReload 更是節省時間不可或缺的功能。本篇將透過一個簡單的範例介紹如何使用 webpack-dev-server 與 react-hot-loader 來讓開發 React 專案更為快速方便。如果你是剛開始使用 Webpack 的開發者，建議先讀完 [Webpack howto](https://github.com/petehunt/webpack-howto) 或 [如何使用 Webpack 模組整合工具](https://rhadow.github.io/2015/03/23/webpackIntro/) 熟悉 Webpack 後再來使用各式各樣的 loader。
 
 **2016-02-24 更新： 由於版本問題造成大家無法成功使用文章中的程式碼感到抱歉，以下已將版本號補上。最新的開發環境建議參考 [react-transform-boilerplate](https://github.com/gaearon/react-transform-boilerplate)。**
 

@@ -9,7 +9,7 @@ comments   : true
 signature  : true
 ---
 
-這篇是 [Jekyll x Github x Blog (Part1)](http://rhadow.github.io/2015/02/18/Jekyll-x-Github-x-Blog-Part1/) 的接續文章。在上一篇文章中，我大略的介紹了Jekyll 部落格的架構，這篇將主要探討如何在已建立的 Jekyll 部落格內加入一些簡易功能。
+這篇是 [Jekyll x Github x Blog (Part1)](https://rhadow.github.io/2015/02/18/Jekyll-x-Github-x-Blog-Part1/) 的接續文章。在上一篇文章中，我大略的介紹了Jekyll 部落格的架構，這篇將主要探討如何在已建立的 Jekyll 部落格內加入一些簡易功能。
 
 ***注意：如果要使用文章內的程式碼內容，請將 `{.%` 與 `{.{` 中間的 `.` 去掉再用。***
 
@@ -76,7 +76,7 @@ JavaScript:
     /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
     var disqus_shortname = 'rhadowtechnote'; // required: replace example with your forum shortname
     var disqus_identifier = '{.{ page.url }}';
-    var disqus_url = 'http://rhadow.github.com{.{ page.url }}';
+    var disqus_url = 'https://rhadow.github.com{.{ page.url }}';
 
     /* * * DON'T EDIT BELOW THIS LINE * * */
     (function() {
@@ -105,24 +105,24 @@ JavaScript:
 
 ```ruby
 module Jekyll
- 
+
   class TagIndex < Page    
     def initialize(site, base, dir, tag)
       @site = site
       @base = base
       @dir = dir
       @name = 'index.html'
- 
+
       self.process(@name)
       self.read_yaml(File.join(base, '_layouts'), 'tag_index.html')
       self.data['tag'] = tag
       self.data['title'] = "Posts Tagged &ldquo;"+tag+"&rdquo;"
     end
   end
- 
+
   class TagGenerator < Generator
     safe true
-    
+
     def generate(site)
       if site.layouts.key? 'tag_index'
         dir = 'tags'
@@ -131,7 +131,7 @@ module Jekyll
         end
       end
     end
-  
+
     def write_tag_index(site, dir, tag)
       index = TagIndex.new(site, site.source, dir, tag)
       index.render(site.layouts, site.site_payload)
@@ -139,7 +139,7 @@ module Jekyll
       site.pages << index
     end
   end
- 
+
 end
 ```
 
@@ -149,7 +149,7 @@ end
 <h2 class="tag-summary-title">{.{page.title}}</h2>
 <table class="table table-striped tag-summary">
   <tbody>
-	{.% for post in site.posts %}	
+	{.% for post in site.posts %}
 	{.% for tag in post.tags %}
 	{.% if tag == page.tag %}
 	<tr>
@@ -167,15 +167,15 @@ end
 				<small>
 				    <span class="fa-stack fa-sm">
 		                <i class="fa fa-tags fa-stack-1x"></i>
-		            </span> : 
-		            {.% for tag in post.tags %} <a class="tag-wrapper" href="/tags/{.{ tag }}" title="View posts tagged with &quot;{.{ tag }}&quot;"><i class="tags">{.{ tag }}</i></a>  {.% if forloop.last != true %} {.% endif %} {.% endfor %} 
+		            </span> :
+		            {.% for tag in post.tags %} <a class="tag-wrapper" href="/tags/{.{ tag }}" title="View posts tagged with &quot;{.{ tag }}&quot;"><i class="tags">{.{ tag }}</i></a>  {.% if forloop.last != true %} {.% endif %} {.% endfor %}
 		        </small>
 		        <small class="comment-count">
 			        <span class="fa-stack fa-sm">
 			            <i class="fa fa-comments fa-stack-1x"></i>
 			        </span>
-			        <a href="http://rhadow.github.com{.{ post.url }}#disqus_thread" data-disqus-identifier="{.{ post.url }}"></a>
-			    </small> 
+			        <a href="https://rhadow.github.com{.{ post.url }}#disqus_thread" data-disqus-identifier="{.{ post.url }}"></a>
+			    </small>
 	        </p>
 	    </td>
 	</tr>

@@ -9,7 +9,7 @@ comments   : true
 signature  : true
 ---
 
-繼[上一篇](http://rhadow.github.io/2015/04/24/Jest-with-React/)分享了如何使用 [Jest](https://facebook.github.io/jest/) 對 React 元件做單元測試，本篇將把焦點專注在如何對 [Flux](https://facebook.github.io/flux/) 做單元測試。對於測試來說，我們必須將被測的模組獨立於其他模組，因此，Jest 的自動模擬化將測試整個 Flux 設計模式的流程變得更為容易。
+繼[上一篇](https://rhadow.github.io/2015/04/24/Jest-with-React/)分享了如何使用 [Jest](https://facebook.github.io/jest/) 對 React 元件做單元測試，本篇將把焦點專注在如何對 [Flux](https://facebook.github.io/flux/) 做單元測試。對於測試來說，我們必須將被測的模組獨立於其他模組，因此，Jest 的自動模擬化將測試整個 Flux 設計模式的流程變得更為容易。
 
 ## TL;DR
 
@@ -21,7 +21,7 @@ Flux 主要是由 Action, Dispatcher, Store 與 View 所組成。使用者透過
 
 ![Image of Flux](http://blog.krawaller.se/img/flux-diagram.png)
 
-以單元測試的角度來看，我們已經在[上一篇](http://rhadow.github.io/2015/04/24/Jest-with-React/)解決了對 View (React 元件) 與 Action (是否正常發送) 的測試，Dispatcher 則是由官方提供。因此，我們真正需要寫單元測試的部分其實只有 Store 而已。
+以單元測試的角度來看，我們已經在[上一篇](https://rhadow.github.io/2015/04/24/Jest-with-React/)解決了對 View (React 元件) 與 Action (是否正常發送) 的測試，Dispatcher 則是由官方提供。因此，我們真正需要寫單元測試的部分其實只有 Store 而已。
 
 ## 測試 Store
 
@@ -92,7 +92,7 @@ module.exports = appStore;
 
 引用於 Facebook 官方的說法：
 
->By design, stores can't be modified from the outside. They have no setters. The only way new data can enter a store 
+>By design, stores can't be modified from the outside. They have no setters. The only way new data can enter a store
 >is through the callback it registers with the dispatcher.
 
 大致上的翻譯是：Store 的內部資料無法從外部直接修改，唯一將新資料加進 Store 的方法就是透過 dispatcher 註冊的回呼函式裡面的各個 Action 將資料帶入。以我們的例子來說就是以下這部分：
@@ -239,4 +239,3 @@ describe('appStore', function() {
 ## 總結
 
 其實使用 Jest 測試 Flux Store 會比測試 React 元件單純許多，我們不需要使用到 [React Test Utilities](https://facebook.github.io/react/docs/test-utils.html)，也不需要特別為 jsx 建立一個 `preprocessor.js`。但是，當應用程式的規模越變越大，Store 之間互相有依賴性時，可能就會需要使用到一些進階技巧，例如：手動建立模擬函式 (Manual mocks)。這些都有在 Jest 官網上做介紹。未來有機會也會發相關文章與大家討論。
-
