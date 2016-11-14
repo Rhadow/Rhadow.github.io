@@ -4,4 +4,4 @@ Welcome to Rhadow's Tech note! This is a place to share my knowledge and experie
 
 This blog is made by Jekyll and using [Hyde](https://github.com/poole/hyde) theme as basic theme. If you have any suggestions or questions about this blog, feel free to contact me.
 
-Please visit: [http://rhadow.github.io/](http://rhadow.github.io/) to view the site.
+Please visit: [https://rhadow.github.io/](https://rhadow.github.io/) to view the site.

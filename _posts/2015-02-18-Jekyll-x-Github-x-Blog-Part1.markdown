@@ -9,7 +9,7 @@ comments   : true
 signature  : true
 ---
 
-由於身邊大部份的同事們都擁有屬於自己的部落格，用來分享技術或記錄自己的學習過程等，讓我有了很大的動力來製作屬於自己的部落格。本篇主要是記錄 Jekyll 部落格的架構，[Jekyll x Github x Blog (Part 2)](http://rhadow.github.io/2015/02/20/Jekyll-x-Github-x-Blog-Part2/) 會分享一些功能的實作，更詳細的教學可參考 [Jekyll 官網](http://jekyllrb.com/)。
+由於身邊大部份的同事們都擁有屬於自己的部落格，用來分享技術或記錄自己的學習過程等，讓我有了很大的動力來製作屬於自己的部落格。本篇主要是記錄 Jekyll 部落格的架構，[Jekyll x Github x Blog (Part 2)](https://rhadow.github.io/2015/02/20/Jekyll-x-Github-x-Blog-Part2/) 會分享一些功能的實作，更詳細的教學可參考 [Jekyll 官網](http://jekyllrb.com/)。
 
 ## Jekyll 簡介
 Jekyll 是一個部落格平台，主要的功能是能夠讓人們可以在 Github 上使用靜態的 HTML 頁面建置部落格。使用者使用 markdown 語法撰寫部落格文章，Jekyll 則會透過動態模板 (Template) 將文章轉為靜態 HTML 網頁。同時 Github Pages 也提供方便的 Host 功能，只需要將你的專案存在 Github 的儲存庫 (Repository) 中，就能夠讓 Github 來協助我們作 Host 的動作，不用再費其他心思。
@@ -122,4 +122,4 @@ Poole/Hyde 也提供將導覽 bar 調到右邊的樣式：
 如果你了解一些 CSS 的技巧，也可以加入自己的 CSS 檔案，剩下的就是自由發揮了。
 
 ## 總結
-使用 Jekyll 建置一個簡易的部落格不是一件難事，它擁有單純，方便與自由度等優點。但是，當你需要某些特殊功能時又該怎麼做呢？沒錯，就是自己動手刻。在 [Jekyll x Github x Blog (Part 2)](http://rhadow.github.io/2015/02/20/Jekyll-x-Github-x-Blog-Part2/) 文章內，我會分享如何實作改善文章顯示方法，評論，標籤與加入 Google Analytics 等功能。如果文章內有任何錯誤或問題，歡迎各位討論糾正。
+使用 Jekyll 建置一個簡易的部落格不是一件難事，它擁有單純，方便與自由度等優點。但是，當你需要某些特殊功能時又該怎麼做呢？沒錯，就是自己動手刻。在 [Jekyll x Github x Blog (Part 2)](https://rhadow.github.io/2015/02/20/Jekyll-x-Github-x-Blog-Part2/) 文章內，我會分享如何實作改善文章顯示方法，評論，標籤與加入 Google Analytics 等功能。如果文章內有任何錯誤或問題，歡迎各位討論糾正。
