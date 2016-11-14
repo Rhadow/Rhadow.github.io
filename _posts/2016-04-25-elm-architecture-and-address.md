@@ -13,6 +13,8 @@ signature  : true
 
 多數人在學習 Elm 時都會看到 [Elm Architecture](https://github.com/evancz/elm-architecture-tutorial) 這個教學文件，也都應該會遇到那個神秘的 `address`。本篇會使用最簡單的 Counter 例子讓大家瞭解 `address` 與這個架構的關聯性。本篇文章使用的 Elm 是目前 (2016-04) 最新的版本 `v0.16.0`。
 
+**2016-11-14 更新： 最新版本的 Elm 已經把 `Signal` 拿掉了，若有興趣了解過往的 Elm 是如何處理資料流的話再往下讀吧。這邊是[官方說明文件](http://elm-lang.org/blog/farewell-to-frp)。**
+
 ## 需求
 
 首先來瞭解一下我們的目標是做出一個簡單的[計數器](http://evancz.github.io/elm-architecture-tutorial/examples/1.html)，這也是[Elm Architecture](https://github.com/evancz/elm-architecture-tutorial) 教學中的第一個例子。 接下來我們會在不使用 [Start-App](https://github.com/evancz/start-app) 這個 library 的幫助下完成這個程式。
@@ -112,7 +114,7 @@ type Signal a
 
 ```
 
-在上例中可以發現 Signal 的內容可以是任何型別。讓我們來思考一下，最終的畫面是個會變動的 `Html` 型別，也就是 `Signal Html`。記得我們的 `view` 函數嗎？畫面是以 `model` 為基底，因此，也需要有一個 `Signal Model` 型別的變數。我們又透過 `update` 函數根據不同的 `Action` 來改變 `model`，所以最後還需要一個 `Signal Action` 型別的變數。如果你還是不太清楚 Signal 的觀念的話，可以看看這個 [視覺化 Signal](http://yang-wei.github.io/elmflux/#/mouseSignal) 的 Demo 
+在上例中可以發現 Signal 的內容可以是任何型別。讓我們來思考一下，最終的畫面是個會變動的 `Html` 型別，也就是 `Signal Html`。記得我們的 `view` 函數嗎？畫面是以 `model` 為基底，因此，也需要有一個 `Signal Model` 型別的變數。我們又透過 `update` 函數根據不同的 `Action` 來改變 `model`，所以最後還需要一個 `Signal Action` 型別的變數。如果你還是不太清楚 Signal 的觀念的話，可以看看這個 [視覺化 Signal](http://yang-wei.github.io/elmflux/#/mouseSignal) 的 Demo
 
 
 由於我們開發的應用不可能都像這個計數器這麼簡單，因此，Elm 提供了一個特殊的方法使開發者能夠在複雜的結構下仍然能夠有效率的改動和保留這些 Signal 的狀態。它就是 `Mailbox (信箱)` 囉。
@@ -187,7 +189,7 @@ main = Signal.map (view actionMailbox.address) modelSignal
 
 ```
 
-最終完成的程式碼如下，一樣歡迎大家複製貼上到 [elm-lang.org/try](elm-lang.org/try) 實驗看看：
+最終完成的程式碼如下，一樣歡迎大家複製貼上到 [elm-lang.org/try](http://elm-lang.org/try) 實驗看看：
 
 <script src="https://gist.github.com/Rhadow/bd80cb378b3bcdcc4a00eb6678f6535f.js"></script>
 
