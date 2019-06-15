@@ -2,7 +2,7 @@
   <div class="container sidebar-sticky">
     <div class="sidebar-about">
       <h1>
-        <a href="{{ site.baseurl }}">
+        <a href="{{ site.url }}">
           {{ site.title }}
         </a>
       </h1>
@@ -10,7 +10,7 @@
     </div>
 
     <nav class="sidebar-nav">
-      <a class="sidebar-nav-item" href="{{ site.baseurl }}">Home</a>
+      <a class="sidebar-nav-item" href="{{ site.url }}">Home</a>
       {% comment %}
         The code below dynamically generates a sidebar nav of pages with
         `layout: page` in the front-matter. See readme for usage.
@@ -24,7 +24,7 @@
           {% endif %}
         {% endif %}
       {% endfor %}
-      <a class="sidebar-nav-item" href="{{ site.baseurl }}json-resume">Resume</a>
+      <a class="sidebar-nav-item" href="{{ site.url }}json-resume">Resume</a>
       <span class="sidebar-nav-item">
         <ul class="list-inline text-center">
           {% if site.twitter_username %}
