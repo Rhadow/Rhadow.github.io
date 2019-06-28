@@ -16,7 +16,7 @@ Since Q# is new to me and might be new to you, it would be better to keep the [d
 
 ## Part I. Single-Qubit Gates
 
-### Task 1.1. State flip: |0⟩ to |1⟩ and vice versa
+### Task 1.1. State flip: \\(\left| 0 \right>\\) to \\(\left| 1 \right>\\) and vice versa
 
 This question asks us to flip the qubit state, just like the not gate in classical computer. We can solve it easily by the X gate. It actually provides the solution in the comments.
 
@@ -29,9 +29,9 @@ operation StateFlip (q : Qubit) : Unit {
 }
 ```
 
-### Task 1.2. Basis change: |0⟩ to |+⟩ and |1⟩ to |-⟩
+### Task 1.2. Basis change: \\(\left| 0 \right>\\) to \\(\left| + \right>\\) and \\(\left| 1 \right>\\) to \\(\left| - \right>\\)
 
-If you did go over the quantum quest notes, this question is a no brainer. Hadamard (H) gate turns |0⟩ to |+⟩ and |1⟩ to |-⟩. Also the inverse of Hadmard gate is itself, applying it twice will give us the original input.
+If you did go over the quantum quest notes, this question is a no brainer. Hadamard (H) gate turns \\(\left| 0 \right>\\) to \\(\left| + \right>\\) and \\(\left| 1 \right>\\) to \\(\left| - \right>\\). Also the inverse of Hadmard gate is itself, applying it twice will give us the original input.
 
 ```
 operation BasisChange (q : Qubit) : Unit {
@@ -42,9 +42,9 @@ operation BasisChange (q : Qubit) : Unit {
 }
 ```
 
-### Task 1.3. Sign flip: |+⟩ to |-⟩ and vice versa
+### Task 1.3. Sign flip: \\(\left| + \right>\\) to \\(\left| - \right>\\) and vice versa
 
-Z gates will turn |1⟩ to -|1⟩ and leave |0⟩ unchanged. Perfect gate for this kata.
+Z gates will turn \\(\left| 1 \right>\\) to -\\(\left| 1 \right>\\) and leave \\(\left| 0 \right>\\) unchanged. Perfect gate for this kata.
 
 ```
 operation SignFlip (q : Qubit) : Unit { 
@@ -55,7 +55,7 @@ operation SignFlip (q : Qubit) : Unit {
 }
 ```
 
-### Task 1.4*. Amplitude change: |0⟩ to cos(alpha)*|0⟩ + sin(alpha)*|1⟩
+### Task 1.4*. Amplitude change: \\(\left| 0 \right>\\) to cos(alpha)*\\(\left| 0 \right>\\) + sin(alpha)*\\(\left| 1 \right>\\)
 
 Again, if you did go over the quantum quest notes, you will spot this is the result of rotation. However, in the lecture notes, it didn't mention which axis the qubit was rotated around. After reading the [docs](https://docs.microsoft.com/en-us/qsharp/api/qsharp/microsoft.quantum.intrinsic?view=qsharp-preview), the `Ry` seems to be the correct gate since the matrix matches the amplitude value. Note, the angle we passed in needs to be double since `Ry` it divides the angle we passed in by two. If you are wondering why they divide the angle by two, please look up Bloch Sphere and how rotation is done on it.
 
