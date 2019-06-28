@@ -31,7 +31,7 @@ operation StateFlip (q : Qubit) : Unit {
 
 ### Task 1.2. Basis change: \\(\left| 0 \right>\\) to \\(\left| + \right>\\) and \\(\left| 1 \right>\\) to \\(\left| - \right>\\)
 
-If you did go over the quantum quest notes, this question is a no brainer. Hadamard (H) gate turns \\(\left| 0 \right>\\) to \\(\left| + \right>\\) and \\(\left| 1 \right>\\) to \\(\left| - \right>\\). Also the inverse of Hadmard gate is itself, applying it twice will give us the original input.
+If you did go over the quantum quest notes, this question is a no brainer. Hadamard (H) gate does exactly what the question asks. Also the inverse of Hadmard gate is itself, applying it twice will give us the original input.
 
 ```
 operation BasisChange (q : Qubit) : Unit {
@@ -44,7 +44,7 @@ operation BasisChange (q : Qubit) : Unit {
 
 ### Task 1.3. Sign flip: \\(\left| + \right>\\) to \\(\left| - \right>\\) and vice versa
 
-Z gates will turn \\(\left| 1 \right>\\) to -\\(\left| 1 \right>\\) and leave \\(\left| 0 \right>\\) unchanged. Perfect gate for this kata.
+Z gates will add a minus sign if the state is \|1> and leave \|0> unchanged. Perfect gate for this kata.
 
 ```
 operation SignFlip (q : Qubit) : Unit { 
