@@ -4,7 +4,7 @@ title      : "Quantum Kata (1) - Basic Gates"
 subtitle   : "My solution to first set of quantum kata - basic gates"
 date       : 2019-06-27
 author     : "Rhadow"
-tags       : Quantum-Computing
+tags       : QuantumComputing
 comments   : true
 signature  : true
 ---

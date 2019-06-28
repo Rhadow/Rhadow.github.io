@@ -4,7 +4,7 @@ title      : "淺談量子電腦"
 subtitle   : "什麼是量子電腦？它與現在使用的電腦有什麼差別？"
 date       : 2019-06-14
 author     : "Rhadow"
-tags       : Quantum-Computing
+tags       : QuantumComputing
 comments   : true
 signature  : true
 ---
