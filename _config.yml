@@ -4,6 +4,7 @@ redcarpet:
   extensions        : ["tables", "autolink", "strikethrough", "space_after_headers", "with_toc_data", "fenced_code_blocks"]
 highlighter         : rouge
 gems                : ["jekyll-paginate"]
+plugins             : [jekyll-paginate]
 
 # Permalinks
 permalink           : pretty
