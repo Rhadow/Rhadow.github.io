@@ -1,0 +1,227 @@
+I"�O<p>Flexbox 是 CSS3 裡一個比較特殊的版面設計模式。最初被設計出來的主要原因是為了提供更有效率的方式來完成傳統 CSS 無法輕易達成的效果 (例如垂直置中)。 Flexbox 適用於小區塊的版面使用，因此，整體版面結構還是建議用傳統的 Grid 模式做調整。本文將簡介目前最新標準的 Flexbox 語法。參考與圖片來源為:</p>
+
+<ul>
+  <li><a href="http://css-tricks.com/snippets/css/a-guide-to-flexbox/">Treehouse- A Complete Guide to Flexbox</a></li>
+  <li><a href="http://bocoup.com/weblog/dive-into-flexbox/">Dive into Flexbox</a></li>
+</ul>
+
+<h2 id="為什麼要學-flexbox">為什麼要學 Flexbox</h2>
+<p>由於 Flexbox 的規範從 2009 年發布到 2012 年間經歷了許多變動，導致許多瀏覽器的支援性不佳，也讓開發者遲遲不敢使用這個技術。不過幸運的是，目前的規範已趨於穩定，而 Flexbox 也能有效地解決許多切版問題，各家的瀏覽器也開始比較有規範的支援。更重要的是，前一陣子才宣布的 <a href="https://code.facebook.com/videos/786462671439502/react-js-conf-2015-keynote-introducing-react-native-/">React Native</a> 就是使用 Flexbox 作為切版基底。也就是說，未來想透過 React Native 來寫 mobile app 的開發者或多或少都需要了解一點 Flexbox。</p>
+
+<h2 id="基礎概念">基礎概念</h2>
+<p>Flexbox 不同於其他單一的 CSS 屬性，它有專屬它自己的一些屬性和抽象概念。主要可分為兩大類:</p>
+
+<ul>
+  <li>Flex container (容器)</li>
+  <li>Flex item (子項目)</li>
+</ul>
+
+<p>想要將一個 HTML 元素設定為 Flex container 相當容易，你只需要在元素中加入 <code class="language-plaintext highlighter-rouge">display: flex</code> 或 <code class="language-plaintext highlighter-rouge">display: inline-flex</code> 。兩者的差別類似 <code class="language-plaintext highlighter-rouge">display: block</code> 和 <code class="language-plaintext highlighter-rouge">display: inline-block</code> 的差別。所有在 Flex container 內的子元素就是 Flex item。如下圖:</p>
+
+<p><img src="http://cdn.css-tricks.com/wp-content/uploads/2011/08/flexbox.png" alt="Flexbox concept from TreeHouse" /></p>
+
+<p>在圖中可觀察到的另一個重要觀念就是 Flexbox 是以兩個主軸為基礎，main axis 與 cross axis。這邊先大致說明一下圖中的各個關鍵字:</p>
+
+<ul>
+  <li><strong>main axis:</strong> 這是 Flexbox 內的主軸之一，所有的 Flex item 都會沿著 main axis 排列。要特別注意的是，main axis 的方向不一定是水平的，它會依照 <code class="language-plaintext highlighter-rouge">flex-direction</code> 的值做改變</li>
+  <li>
+    <table>
+      <tbody>
+        <tr>
+          <td>**main start</td>
+          <td>main end:** main axis 的起點邊界與終點邊界</td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+  <li><strong>main size:</strong> Flexbox 的寬或高，方向依照 <code class="language-plaintext highlighter-rouge">flex-direction</code> 的值決定</li>
+  <li><strong>cross axis:</strong> Flexbox 內的另一個主軸，垂直於 main axis。方向依照<code class="language-plaintext highlighter-rouge">flex-direction</code> 的值做改變</li>
+  <li>
+    <table>
+      <tbody>
+        <tr>
+          <td>**cross start</td>
+          <td>cross end:** cross axis 的起點邊界與終點邊界</td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+  <li><strong>cross size:</strong> Flexbox 的寬或高，方向依照 <code class="language-plaintext highlighter-rouge">flex-direction</code> 的值決定</li>
+</ul>
+
+<p>在 Flexbox 裡，所有元素的位置都是相對於上面所述的兩個主軸。隨著方向改變，所有的 flex item 位置也會有所變化。</p>
+
+<h2 id="flex-container-屬性介紹">Flex Container 屬性介紹</h2>
+<h3 id="flex-direction">flex-direction</h3>
+
+<p><img src="http://cdn.css-tricks.com/wp-content/uploads/2014/05/flex-direction1.svg" alt="Flex Direction concept from TreeHouse" /></p>
+
+<p>此屬性決定了 main axis 的方向，也代表著所有 flex item 的內容會如何排列。</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">.container</span> <span class="p">{</span>
+    <span class="nl">flex-direction</span><span class="p">:</span> <span class="n">row</span> <span class="err">|</span> <span class="n">row-reverse</span> <span class="err">|</span> <span class="n">column</span> <span class="err">|</span> <span class="n">column-reverse</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li><strong>row:</strong> (預設值) 當 <code class="language-plaintext highlighter-rouge">writing-mode</code> 為 <code class="language-plaintext highlighter-rouge">ltr</code> 時，main axis 方向為從左到右。當 <code class="language-plaintext highlighter-rouge">writing-mode</code> 為 <code class="language-plaintext highlighter-rouge">rtl</code> 時，main axis 方向為從右到左</li>
+  <li><strong>row-reverse:</strong> 當 <code class="language-plaintext highlighter-rouge">writing-mode</code> 為 <code class="language-plaintext highlighter-rouge">ltr</code> 時，main axis 方向為從右到左。當 <code class="language-plaintext highlighter-rouge">writing-mode</code> 為 <code class="language-plaintext highlighter-rouge">rtl</code> 時，main axis 方向為從左到右</li>
+  <li><strong>column:</strong> 同 row ，方向改為從上到下</li>
+  <li><strong>column-reverse:</strong> 同 row-reverse ，方向改為從下到上</li>
+</ul>
+
+<h3 id="flex-wrap">flex-wrap</h3>
+
+<p><img src="http://cdn.css-tricks.com/wp-content/uploads/2014/05/flex-wrap.svg" alt="Flex Wrap concept from TreeHouse" /></p>
+
+<p>Flexbox 預設會將所有 Flex item 都排列在同一排，此屬性可讓 flex container 在同一排塞不下所有 item 時產生換行效果。</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">.container</span><span class="p">{</span>
+    <span class="nl">flex-wrap</span><span class="p">:</span> <span class="nb">nowrap</span> <span class="err">|</span> <span class="n">wrap</span> <span class="err">|</span> <span class="n">wrap-reverse</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li><strong>no-wrap:</strong> (預設值) 不換行，當 <code class="language-plaintext highlighter-rouge">writing-mode</code> 為 <code class="language-plaintext highlighter-rouge">ltr</code> 時，排列方向為從左到右。當 <code class="language-plaintext highlighter-rouge">writing-mode</code> 為 <code class="language-plaintext highlighter-rouge">rtl</code> 時，排列方向為從右到左</li>
+  <li><strong>wrap:</strong> 換行，方向同上</li>
+  <li><strong>wrap-reverse:</strong> 換行，方向與 wrap 相反</li>
+</ul>
+
+<h3 id="flex-flow">flex-flow</h3>
+
+<p><code class="language-plaintext highlighter-rouge">flex-flow</code> 屬性是 <code class="language-plaintext highlighter-rouge">flex-direction</code> 和 <code class="language-plaintext highlighter-rouge">flex-wrap</code> 的縮寫，可快速定義 flex container 的主軸。預設為 <code class="language-plaintext highlighter-rouge">row nowrap</code> 。寫法如下：</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">.container</span><span class="p">{</span>
+    <span class="nl">flex-flow</span><span class="p">:</span> <span class="err">&lt;</span><span class="n">flex-direction</span><span class="err">&gt;</span> <span class="err">||</span> <span class="err">&lt;</span><span class="n">flex-wrap</span><span class="err">&gt;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="justify-content">justify-content</h3>
+
+<p><img src="http://cdn.css-tricks.com/wp-content/uploads/2013/04/justify-content.svg" alt="Justify-content concept from TreeHouse" /></p>
+
+<p><code class="language-plaintext highlighter-rouge">justify-content</code> 是用來定義 flex item 在 main axis 上的排列位置。它會依照賦予的值分配多餘的空白空間。</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">.container</span> <span class="p">{</span>
+    <span class="nl">justify-content</span><span class="p">:</span> <span class="n">flex-start</span> <span class="err">|</span> <span class="n">flex-end</span> <span class="err">|</span> <span class="nb">center</span> <span class="err">|</span> <span class="n">space-between</span> <span class="err">|</span> <span class="n">space-around</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li><strong>flex-start:</strong> (預設值) Flex item 會靠往 <code class="language-plaintext highlighter-rouge">main-start</code> 對齊</li>
+  <li><strong>flex-end:</strong> Flex item 會靠往 <code class="language-plaintext highlighter-rouge">main-end</code> 對齊</li>
+  <li><strong>center:</strong> 於 main axis 上置中 Flex item</li>
+  <li><strong>space-between:</strong> 將空白平均分配到所有 Flex item 之間，第一個 item 靠在 <code class="language-plaintext highlighter-rouge">main-start</code>，最後一個 item 靠在 <code class="language-plaintext highlighter-rouge">main-end</code></li>
+  <li><strong>space-around:</strong> 平均分配空白到所有的 Flex item 周圍，包括第一個與最後一個 item。你可能會注意到最左和最右邊的間距會比中間小，原因是在於中間的間隔是左邊 item 的右間隔加上右邊 item 的左間隔</li>
+</ul>
+
+<h3 id="align-items">align-items</h3>
+
+<p><img src="http://cdn.css-tricks.com/wp-content/uploads/2014/05/align-items.svg" alt="align-items concept from TreeHouse" /></p>
+
+<p>此屬性是用來定義 flex item 在 cross axis 上的排列位置。你可以這樣想：cross axis 與 <code class="language-plaintext highlighter-rouge">align-items</code> 的關係就像 main axis 與 <code class="language-plaintext highlighter-rouge">justify-content</code>之間的關係。</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">.container</span> <span class="p">{</span>
+    <span class="nl">align-items</span><span class="p">:</span> <span class="n">flex-start</span> <span class="err">|</span> <span class="n">flex-end</span> <span class="err">|</span> <span class="nb">center</span> <span class="err">|</span> <span class="nb">baseline</span> <span class="err">|</span> <span class="n">stretch</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li><strong>flex-start:</strong> Flex item 會靠往 <code class="language-plaintext highlighter-rouge">cross-start</code> 對齊</li>
+  <li><strong>flex-end:</strong> Flex item 會靠往 <code class="language-plaintext highlighter-rouge">cross-end</code> 對齊</li>
+  <li><strong>center:</strong> 於 cross axis 上置中 Flex item</li>
+  <li><strong>baseline:</strong> Flex item 會依照各個 item 的基準線對齊</li>
+  <li><strong>stretch:</strong> (預設值) 自動伸縮將多餘的空間補滿</li>
+</ul>
+
+<h3 id="align-content">align-content</h3>
+
+<p><img src="http://cdn.css-tricks.com/wp-content/uploads/2013/04/align-content.svg" alt="align-content concept from TreeHouse" /></p>
+
+<p><code class="language-plaintext highlighter-rouge">align-content</code> 主要是用在當 main-axis 有換行時。此屬性相當於 <code class="language-plaintext highlighter-rouge">justify-content</code> 與 <code class="language-plaintext highlighter-rouge">align-items</code> 的綜合版，不過它排列的是整個內容，而不是單一行。排列對應的軸是 cross axis 而非 main-axis。注意：當 main axis 沒換行時，此屬性不會有作用。</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">.container</span> <span class="p">{</span>
+    <span class="nl">align-content</span><span class="p">:</span> <span class="n">flex-start</span> <span class="err">|</span> <span class="n">flex-end</span> <span class="err">|</span> <span class="nb">center</span> <span class="err">|</span> <span class="n">space-between</span> <span class="err">|</span> <span class="n">space-around</span> <span class="err">|</span> <span class="n">stretch</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<ul>
+  <li><strong>flex-start:</strong> 所有內容會靠往 <code class="language-plaintext highlighter-rouge">cross-start</code> 對齊</li>
+  <li><strong>flex-end:</strong> 所有內容會靠往 <code class="language-plaintext highlighter-rouge">cross-end</code> 對齊</li>
+  <li><strong>center:</strong> 於 cross axis 上置中所有內容</li>
+  <li><strong>space-between:</strong> 將空白平均分配到每行內容之間，第一行靠在 <code class="language-plaintext highlighter-rouge">cross-start</code>，最後一行靠在 <code class="language-plaintext highlighter-rouge">cross-end</code></li>
+  <li><strong>space-around:</strong> 平均分配空白到每行內容周圍，包括第一行與最後一行</li>
+  <li><strong>stretch:</strong> (預設值) 自動伸縮將多餘的空間補滿</li>
+</ul>
+
+<h2 id="flex-item-屬性介紹">Flex Item 屬性介紹</h2>
+<p>所有包在 Flex Container 內的直接子元素都是 Flex item，包含文字。<code class="language-plaintext highlighter-rouge">float</code>，<code class="language-plaintext highlighter-rouge">clear</code> 和 <code class="language-plaintext highlighter-rouge">vertical-align</code>對 Flex item 沒有作用。Flex item 內的元素與內容不會被 Flexbox 影響。舉個例子：在 Flex item 元素上加入 <code class="language-plaintext highlighter-rouge">float: left</code> 不會有任何反應，但在 Flex item 的子元素裡加入 <code class="language-plaintext highlighter-rouge">float: left</code> 則會正常往左浮動。</p>
+
+<h3 id="order">order</h3>
+
+<p><img src="http://cdn.css-tricks.com/wp-content/uploads/2013/04/order-2.svg" alt="order concept from TreeHouse" /></p>
+
+<p><code class="language-plaintext highlighter-rouge">order</code> 是一個非常好用的屬性，它賦予了我們不用修改 HTML 就能更動元素位置的能力。一般來說，每個 item 都是依照在 HTML 中的排列順序出現，但此屬性可控制元素出現的先後順序。值越小的排越前面。</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">.item</span> <span class="p">{</span>
+    <span class="nl">order</span><span class="p">:</span> <span class="err">&lt;</span><span class="n">integer</span><span class="err">&gt;</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="flex-grow">flex-grow</h3>
+
+<p><img src="http://cdn.css-tricks.com/wp-content/uploads/2014/05/flex-grow.svg" alt="flex-grow concept from TreeHouse" /></p>
+
+<p>此屬性賦予每個 item 在需要時自動佔滿剩餘寬度的能力。接受的值為一個無單位的數字，此數字決定了 item 在剩餘的空間內該佔滿多少比例的寬度。如果所有的 item 都將 <code class="language-plaintext highlighter-rouge">flex-grow</code> 設為 1，那麼每個 item 都會有相同寬度並佔滿所有空間。如果將其中一個的 <code class="language-plaintext highlighter-rouge">flex-grow</code> 改為 2 的話，被修改的元素將會佔滿比其他元素兩倍大的空間。</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">.item</span> <span class="p">{</span>
+    <span class="nl">flex-grow</span><span class="p">:</span> <span class="err">&lt;</span><span class="n">number</span><span class="err">&gt;</span><span class="p">;</span> <span class="c">/* default 0 */</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="flex-shrink">flex-shrink</h3>
+
+<p>此屬性為 <code class="language-plaintext highlighter-rouge">flex-grow</code> 的相反。</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">.item</span> <span class="p">{</span>
+    <span class="nl">flex-shrink</span><span class="p">:</span> <span class="err">&lt;</span><span class="n">number</span><span class="err">&gt;</span><span class="p">;</span> <span class="c">/* default 1 */</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="flex-basis">flex-basis</h3>
+
+<p>此屬性會依照 <code class="language-plaintext highlighter-rouge">flex-direction</code> 定義 item 最小的寬度或高度，有點類似 <code class="language-plaintext highlighter-rouge">min-width</code>。這個屬性可以翻譯成：當需要伸縮時，依照 <code class="language-plaintext highlighter-rouge">flex-grow</code> 或 <code class="language-plaintext highlighter-rouge">Flex-shrink</code> 的值來伸縮，但是寬度或高度不能小於 X px 或 em。</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">.item</span> <span class="p">{</span>
+    <span class="nl">flex-basis</span><span class="p">:</span> <span class="err">&lt;</span><span class="n">length</span><span class="err">&gt;</span> <span class="err">|</span> <span class="nb">auto</span><span class="p">;</span> <span class="c">/* default auto */</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="flex">flex</h3>
+
+<p><code class="language-plaintext highlighter-rouge">flex</code> 屬性是 <code class="language-plaintext highlighter-rouge">flex-grow</code>，<code class="language-plaintext highlighter-rouge">flex-shrink</code> 和 <code class="language-plaintext highlighter-rouge">flex-basis</code> 的縮寫，第二和第三個參數 (<code class="language-plaintext highlighter-rouge">flex-shrink</code> 和 <code class="language-plaintext highlighter-rouge">flex-basis</code>) 可不給。預設值為 <code class="language-plaintext highlighter-rouge">0 1 auto</code>。</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">.item</span> <span class="p">{</span>
+    <span class="nl">flex-basis</span><span class="p">:</span> <span class="err">&lt;</span><span class="n">length</span><span class="err">&gt;</span> <span class="err">|</span> <span class="nb">auto</span><span class="p">;</span> <span class="c">/* default auto */</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>建議使用此屬性而非獨立使用上述三個屬性來設定 item 寬/高度。</p>
+
+<h3 id="align-self">align-self</h3>
+
+<p><img src="http://cdn.css-tricks.com/wp-content/uploads/2014/05/align-self.svg" alt="align-self concept from TreeHouse" /></p>
+
+<p>此屬性可以將個別 item 的 <code class="language-plaintext highlighter-rouge">align-items</code> 屬性覆蓋過去進而提供更為彈性的設計模式。</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">.item</span> <span class="p">{</span>
+    <span class="nl">align-self</span><span class="p">:</span> <span class="nb">auto</span> <span class="err">|</span> <span class="n">flex-start</span> <span class="err">|</span> <span class="n">flex-end</span> <span class="err">|</span> <span class="nb">center</span> <span class="err">|</span> <span class="nb">baseline</span> <span class="err">|</span> <span class="n">stretch</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>對於此屬性的值的解說，請參考 <code class="language-plaintext highlighter-rouge">align-items</code> 部分。</p>
+
+<h2 id="總結">總結</h2>
+
+<p>Flexbox 是一個非常強大的排版模式，它輕易的解決了以往許多需要使用各種怪異的方法來解決的問題。但，它的整體架構與常見的 Grid 系統又不太一樣，開發者需要換一個角度來思考版面的配置。希望這篇文章有讓大家準備好在未來的專案裡使用 Flexbox。如果文章內有任何問題，也歡迎各位討論糾正。</p>
+:ET

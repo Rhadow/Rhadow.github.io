@@ -1,0 +1,242 @@
+I"lb<p>前端的世界變化的很快，最近如果有持續在關注 ReactJS 的人應該或多或少都會聽過 <a href="https://github.com/webpack/webpack">Webpack</a> 這個名詞。這段 <a href="https://www.youtube.com/watch?v=VkTCL6Nqm6Y">Pete Hunt 的演講</a> 清楚的指出了 Webpack 與其他模組整合工具的差別，也給了正在使用 gulp 和 browserify 的開發者另一個選擇來完成模組整合的工作。Pete 也在 Github 上寫了 <a href="https://github.com/petehunt/webpack-howto">webpack-howto</a> 來更加詳細地解釋 Webpack 的概念。本篇將參考 Pete 提供的範例，英文比較好的讀者建議直接閱讀原出處。</p>
+
+<h2 id="webpack">Webpack</h2>
+<p>Webpack 是德國開發者 Tobias Koppers 開發的模組整合工具。它的核心功能如下:</p>
+
+<ul>
+  <li>可同時整合 <a href="http://www.commonjs.org/specs/modules/1.0/">CommonJS</a> 和 <a href="https://github.com/amdjs/amdjs-api/wiki/AMD">AMD</a> 模組</li>
+  <li>轉換 JSX, Coffee Script, TypeScript 等</li>
+  <li>分散封裝專案使用的程式碼，使載入頁面時只需載入當頁所需的程式碼以加速載入速度</li>
+  <li>整合樣式表 (css, sass, less 等)</li>
+  <li>處理圖片與字型</li>
+  <li>建置 production-ready 的程式碼 (壓縮)</li>
+</ul>
+
+<h2 id="給使用-browserify-的開發者">給使用 Browserify 的開發者</h2>
+
+<p>執行下列兩行指令會得到相同的結果:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">browserify</span> <span class="nx">main</span><span class="p">.</span><span class="nx">js</span> <span class="o">&gt;</span> <span class="nx">bundle</span><span class="p">.</span><span class="nx">js</span>
+</code></pre></div></div>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">webpack</span> <span class="nx">main</span><span class="p">.</span><span class="nx">js</span> <span class="nx">bundle</span><span class="p">.</span><span class="nx">js</span>
+</code></pre></div></div>
+
+<p>不過，Webpack 提供比 browserify 更多的功能，建議創建一個名為 <code class="language-plaintext highlighter-rouge">webpack.config.js</code> 的檔案來做集中管理。如果您有在用 Gulp，這隻檔案的功能就類似於 <code class="language-plaintext highlighter-rouge">gulpfile.js</code>。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// webpack.config.js</span>
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">entry</span><span class="p">:</span> <span class="dl">'</span><span class="s1">./main.js</span><span class="dl">'</span><span class="p">,</span>
+  <span class="na">output</span><span class="p">:</span> <span class="p">{</span>
+    <span class="na">filename</span><span class="p">:</span> <span class="dl">'</span><span class="s1">bundle.js</span><span class="dl">'</span>       
+  <span class="p">}</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<h2 id="如何啟動-webpack">如何啟動 Webpack</h2>
+
+<p>切換到有 <code class="language-plaintext highlighter-rouge">webpack.config.js</code> 檔案的目錄下並執行:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">webpack</code> : 會在開發模式下開始一次性的建置</li>
+  <li><code class="language-plaintext highlighter-rouge">webpack -p</code> : 會建置 production-ready 的程式碼 (壓縮)</li>
+  <li><code class="language-plaintext highlighter-rouge">webpack --watch</code> : 會在開發模式下因應程式碼的變換持續更新建置 (快速!)</li>
+  <li><code class="language-plaintext highlighter-rouge">webpack -d</code> : 加入 source maps 檔案</li>
+</ul>
+
+<h2 id="將其他轉譯語言轉換回-javascript">將其他轉譯語言轉換回 JavaScript</h2>
+
+<p>Webpack 的 <strong>loader</strong> 相當於 browserify 內的 transforms。以下程式碼顯示了如何在 Webpack 中轉換 CoffeeScript 和 Facebook 的 JSX+ES6。(必須先 <code class="language-plaintext highlighter-rouge">npm install jsx-loader coffee-loader</code>):</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// webpack.config.js</span>
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">entry</span><span class="p">:</span> <span class="dl">'</span><span class="s1">./main.js</span><span class="dl">'</span><span class="p">,</span>
+  <span class="na">output</span><span class="p">:</span> <span class="p">{</span>
+    <span class="na">filename</span><span class="p">:</span> <span class="dl">'</span><span class="s1">bundle.js</span><span class="dl">'</span>       
+  <span class="p">},</span>
+  <span class="na">module</span><span class="p">:</span> <span class="p">{</span>
+    <span class="na">loaders</span><span class="p">:</span> <span class="p">[</span>
+      <span class="p">{</span> <span class="na">test</span><span class="p">:</span> <span class="sr">/</span><span class="se">\.</span><span class="sr">coffee$/</span><span class="p">,</span> <span class="na">loader</span><span class="p">:</span> <span class="dl">'</span><span class="s1">coffee-loader</span><span class="dl">'</span> <span class="p">},</span>
+      <span class="p">{</span> <span class="na">test</span><span class="p">:</span> <span class="sr">/</span><span class="se">\.</span><span class="sr">js$/</span><span class="p">,</span> <span class="na">loader</span><span class="p">:</span> <span class="dl">'</span><span class="s1">jsx-loader?harmony</span><span class="dl">'</span> <span class="p">}</span> 
+      <span class="c1">// loaders 可以像 querystring 一樣接收參數</span>
+    <span class="p">]</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>如果希望在 <code class="language-plaintext highlighter-rouge">require()</code> 時不需要加入副檔名，可以像下面範例加入一個 <code class="language-plaintext highlighter-rouge">resolve.extensions</code> 屬性並告訴 webpack 哪些副檔名是可以省略的:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// webpack.config.js</span>
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">entry</span><span class="p">:</span> <span class="dl">'</span><span class="s1">./main.js</span><span class="dl">'</span><span class="p">,</span>
+  <span class="na">output</span><span class="p">:</span> <span class="p">{</span>
+    <span class="na">filename</span><span class="p">:</span> <span class="dl">'</span><span class="s1">bundle.js</span><span class="dl">'</span>       
+  <span class="p">},</span>
+  <span class="na">module</span><span class="p">:</span> <span class="p">{</span>
+    <span class="na">loaders</span><span class="p">:</span> <span class="p">[</span>
+      <span class="p">{</span> <span class="na">test</span><span class="p">:</span> <span class="sr">/</span><span class="se">\.</span><span class="sr">coffee$/</span><span class="p">,</span> <span class="na">loader</span><span class="p">:</span> <span class="dl">'</span><span class="s1">coffee-loader</span><span class="dl">'</span> <span class="p">},</span>
+      <span class="p">{</span> <span class="na">test</span><span class="p">:</span> <span class="sr">/</span><span class="se">\.</span><span class="sr">js$/</span><span class="p">,</span> <span class="na">loader</span><span class="p">:</span> <span class="dl">'</span><span class="s1">jsx-loader?harmony</span><span class="dl">'</span> <span class="p">}</span> 
+      <span class="c1">// loaders 可以像 querystring 一樣接收參數</span>
+    <span class="p">]</span>
+  <span class="p">},</span>
+  <span class="na">resolve</span><span class="p">:</span> <span class="p">{</span>
+    <span class="c1">// 設定後只需要寫 require('file') 而不用寫成 require('file.coffee')</span>
+    <span class="na">extensions</span><span class="p">:</span> <span class="p">[</span><span class="dl">''</span><span class="p">,</span> <span class="dl">'</span><span class="s1">.js</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">.json</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">.coffee</span><span class="dl">'</span><span class="p">]</span> 
+  <span class="p">}</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<h2 id="樣式表與圖片">樣式表與圖片</h2>
+
+<p>Webpack 允許使用 <code class="language-plaintext highlighter-rouge">require()</code> 的方式將樣式表與圖片加入:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">./bootstrap.css</span><span class="dl">'</span><span class="p">);</span>
+<span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">./myapp.less</span><span class="dl">'</span><span class="p">);</span>
+
+<span class="kd">var</span> <span class="nx">img</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="dl">'</span><span class="s1">img</span><span class="dl">'</span><span class="p">);</span>
+<span class="nx">img</span><span class="p">.</span><span class="nx">src</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">./glyph.png</span><span class="dl">'</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>當引用 CSS (less, sass等) 時，webpack 會將 CSS 內容包在 <code class="language-plaintext highlighter-rouge">&lt;style&gt;</code> 標籤中並加入到頁面內。
+引用圖片時，webpack 則會返回圖片的路徑。
+以下範例為如何設定對應的 <code class="language-plaintext highlighter-rouge">loader</code> :</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// webpack.config.js</span>
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">entry</span><span class="p">:</span> <span class="dl">'</span><span class="s1">./main.js</span><span class="dl">'</span><span class="p">,</span>
+  <span class="na">output</span><span class="p">:</span> <span class="p">{</span>
+    <span class="na">path</span><span class="p">:</span> <span class="dl">'</span><span class="s1">./build</span><span class="dl">'</span><span class="p">,</span> <span class="c1">// 儲存圖片與JS檔案的目錄</span>
+    <span class="na">publicPath</span><span class="p">:</span> <span class="dl">'</span><span class="s1">http://mycdn.com/</span><span class="dl">'</span><span class="p">,</span> 
+    <span class="c1">// webpack 使用 require() 時參考的路徑，例如圖片的路徑</span>
+    <span class="na">filename</span><span class="p">:</span> <span class="dl">'</span><span class="s1">bundle.js</span><span class="dl">'</span>
+  <span class="p">},</span>
+  <span class="na">module</span><span class="p">:</span> <span class="p">{</span>
+    <span class="na">loaders</span><span class="p">:</span> <span class="p">[</span>
+      <span class="p">{</span> <span class="na">test</span><span class="p">:</span> <span class="sr">/</span><span class="se">\.</span><span class="sr">less$/</span><span class="p">,</span> <span class="na">loader</span><span class="p">:</span> <span class="dl">'</span><span class="s1">style-loader!css-loader!less-loader</span><span class="dl">'</span> <span class="p">},</span> 
+      <span class="c1">// 使用 ! 來串接 loaders</span>
+      <span class="p">{</span> <span class="na">test</span><span class="p">:</span> <span class="sr">/</span><span class="se">\.</span><span class="sr">css$/</span><span class="p">,</span> <span class="na">loader</span><span class="p">:</span> <span class="dl">'</span><span class="s1">style-loader!css-loader</span><span class="dl">'</span> <span class="p">},</span>
+      <span class="p">{</span> <span class="na">test</span><span class="p">:</span> <span class="sr">/</span><span class="se">\.(</span><span class="sr">png|jpg</span><span class="se">)</span><span class="sr">$/</span><span class="p">,</span> <span class="na">loader</span><span class="p">:</span> <span class="dl">'</span><span class="s1">url-loader?limit=8192</span><span class="dl">'</span><span class="p">}</span> 
+      <span class="c1">// 當圖片大小小於 8k 時使用 base64 URL, 其餘使用直接連接到圖片的 URL</span>
+    <span class="p">]</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>不了解 base64 URL 的讀者可參考<a href="http://en.wikipedia.org/wiki/Data_URI_scheme">維基百科</a>。</p>
+
+<h2 id="特定功能標籤">特定功能標籤</h2>
+
+<p>當有功能在某些條件下才會開啟時，例如顯示偵錯訊息，可以使用這個功能來隱藏部分程式碼。在你的程式碼內加入一些全域變數:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">if</span> <span class="p">(</span><span class="nx">__DEV__</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">warn</span><span class="p">(</span><span class="dl">'</span><span class="s1">Extra logging</span><span class="dl">'</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="c1">// ...</span>
+<span class="k">if</span> <span class="p">(</span><span class="nx">__PRERELEASE__</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">showSecretFeature</span><span class="p">();</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>接著告訴 webpack 該如何處理這些全域變數:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// webpack.config.js</span>
+
+<span class="c1">// definePlugin 接收字串，因此你也可以直接寫入字串而不使用 JSON.stringify()</span>
+<span class="kd">var</span> <span class="nx">definePlugin</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">webpack</span><span class="p">.</span><span class="nx">DefinePlugin</span><span class="p">({</span>
+  <span class="na">__DEV__</span><span class="p">:</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">BUILD_DEV</span> <span class="o">||</span> <span class="dl">'</span><span class="s1">true</span><span class="dl">'</span><span class="p">)),</span>
+  <span class="na">__PRERELEASE__</span><span class="p">:</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">BUILD_PRERELEASE</span> <span class="o">||</span> <span class="dl">'</span><span class="s1">false</span><span class="dl">'</span><span class="p">))</span>
+<span class="p">});</span>
+
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">entry</span><span class="p">:</span> <span class="dl">'</span><span class="s1">./main.js</span><span class="dl">'</span><span class="p">,</span>
+  <span class="na">output</span><span class="p">:</span> <span class="p">{</span>
+    <span class="na">filename</span><span class="p">:</span> <span class="dl">'</span><span class="s1">bundle.js</span><span class="dl">'</span>       
+  <span class="p">},</span>
+  <span class="na">plugins</span><span class="p">:</span> <span class="p">[</span><span class="nx">definePlugin</span><span class="p">]</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>設定完成後，可以使用 <code class="language-plaintext highlighter-rouge">BUILD_DEV=1 BUILD_PRERELEASE=1 webpack</code> 來完成建置。
+調整指令的參數即可模擬各狀況下的建置。特別注意的是，<code class="language-plaintext highlighter-rouge">webpack -p</code>在壓縮時會將沒用到的程式碼刪除，
+因此不用擔心會有不該出現的程式碼被加入到最終產出的程式碼內。</p>
+
+<h2 id="分批整合">分批整合</h2>
+
+<p>假設現在專案中有 Profile 頁面和 Feed 頁面。通常我們不希望使用者在連接到 Profile 頁面時載入 Feed 頁的程式碼。因此，我們需要為每個頁面分批整合:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// webpack.config.js</span>
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">entry</span><span class="p">:</span> <span class="p">{</span>
+    <span class="na">Profile</span><span class="p">:</span> <span class="dl">'</span><span class="s1">./profile.js</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">Feed</span><span class="p">:</span> <span class="dl">'</span><span class="s1">./feed.js</span><span class="dl">'</span>
+  <span class="p">},</span>
+  <span class="na">output</span><span class="p">:</span> <span class="p">{</span>
+    <span class="na">path</span><span class="p">:</span> <span class="dl">'</span><span class="s1">build</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">filename</span><span class="p">:</span> <span class="dl">'</span><span class="s1">[name].js</span><span class="dl">'</span> 
+    <span class="c1">// [name] 會依據上面 entry 的屬性名稱變動</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>在 Profile 頁面，使用 <code class="language-plaintext highlighter-rouge">&lt;script src="build/Profile.js"&gt;&lt;/script&gt;</code> 引入。同理可應用到 Feed 頁面。</p>
+
+<h2 id="共用程式碼優化">共用程式碼優化</h2>
+
+<p>假設 Feed 和 Profile 頁面擁有許多相同處 (像 React 的元件)，webpack 可以分析出共通處並額外整合成一組在頁面間可快取的共用包:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// webpack.config.js</span>
+
+<span class="kd">var</span> <span class="nx">webpack</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">webpack</span><span class="dl">'</span><span class="p">);</span>
+
+<span class="kd">var</span> <span class="nx">commonsPlugin</span> <span class="o">=</span>
+  <span class="k">new</span> <span class="nx">webpack</span><span class="p">.</span><span class="nx">optimize</span><span class="p">.</span><span class="nx">CommonsChunkPlugin</span><span class="p">(</span><span class="dl">'</span><span class="s1">common.js</span><span class="dl">'</span><span class="p">);</span>
+
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">entry</span><span class="p">:</span> <span class="p">{</span>
+    <span class="na">Profile</span><span class="p">:</span> <span class="dl">'</span><span class="s1">./profile.js</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">Feed</span><span class="p">:</span> <span class="dl">'</span><span class="s1">./feed.js</span><span class="dl">'</span>
+  <span class="p">},</span>
+  <span class="na">output</span><span class="p">:</span> <span class="p">{</span>
+    <span class="na">path</span><span class="p">:</span> <span class="dl">'</span><span class="s1">build</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">filename</span><span class="p">:</span> <span class="dl">'</span><span class="s1">[name].js</span><span class="dl">'</span>
+    <span class="c1">// [name] 會依據上面 entry 的屬性名稱變動</span>
+  <span class="p">},</span>
+  <span class="na">plugins</span><span class="p">:</span> <span class="p">[</span><span class="nx">commonsPlugin</span><span class="p">]</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>別忘了要在引入 Page 和 Feed 頁面的 <code class="language-plaintext highlighter-rouge">script</code> 標籤前加入 <code class="language-plaintext highlighter-rouge">&lt;script src="build/common.js"&gt;&lt;/script&gt;</code></p>
+
+<h2 id="非同步載入">非同步載入</h2>
+
+<p>Webpack 提供非同步載入功能。以下程式碼透過路徑名稱與非同步載入功能決定哪些模組需要被載入以避免載入一些非必要的程式碼。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">if</span> <span class="p">(</span><span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">pathname</span> <span class="o">===</span> <span class="dl">'</span><span class="s1">/feed</span><span class="dl">'</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">showLoadingState</span><span class="p">();</span>
+  <span class="nx">require</span><span class="p">.</span><span class="nx">ensure</span><span class="p">([],</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">hideLoadingState</span><span class="p">();</span>
+    <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">./feed</span><span class="dl">'</span><span class="p">).</span><span class="nx">show</span><span class="p">();</span> 
+    <span class="c1">// 此時 callback 內容所呼叫的模組 (此為 './feed') 已可以被同步呼叫</span>
+  <span class="p">});</span>
+<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">pathname</span> <span class="o">===</span> <span class="dl">'</span><span class="s1">/profile</span><span class="dl">'</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">showLoadingState</span><span class="p">();</span>
+  <span class="nx">require</span><span class="p">.</span><span class="nx">ensure</span><span class="p">([],</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">hideLoadingState</span><span class="p">();</span>
+    <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">./profile</span><span class="dl">'</span><span class="p">).</span><span class="nx">show</span><span class="p">();</span>
+  <span class="p">});</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Webpack 預設要被引入的檔案存在於根目錄，你可以在 <code class="language-plaintext highlighter-rouge">output.publicPath</code> 的屬性下更改設定。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// webpack.config.js</span>
+<span class="nx">output</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nl">path</span><span class="p">:</span> <span class="dl">"</span><span class="s2">/home/proj/public/assets</span><span class="dl">"</span><span class="p">,</span> <span class="c1">//webpack 建置專案的路徑</span>
+    <span class="nx">publicPath</span><span class="p">:</span> <span class="dl">"</span><span class="s2">/assets/</span><span class="dl">"</span> <span class="c1">//webpack 使用 require() 時參考的路徑</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="總結">總結</h2>
+
+<p>Webpack 提供給了開發者另一種模組整合的選擇，它與 ReactJS 的配合度也相當高，目前的缺點在於缺乏詳細的文件解說。希望這篇文章有讓各位多認識 Webpack 一點，如果有興趣想深入研究請到 <a href="http://webpack.github.io/docs/?utm_source=github&amp;utm_medium=readme&amp;utm_campaign=trdr">Webpack 官方網站</a> 閱讀更詳細的說明。</p>
+:ET

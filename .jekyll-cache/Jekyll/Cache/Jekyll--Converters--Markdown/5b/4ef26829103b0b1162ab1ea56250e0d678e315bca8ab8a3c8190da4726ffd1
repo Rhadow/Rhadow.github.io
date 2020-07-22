@@ -1,0 +1,269 @@
+I"`c<p>Webpack 包含了許多好用的 loader 可以協助開發者在開發過程中省去不少麻煩。而 LiveReload 更是節省時間不可或缺的功能。本篇將透過一個簡單的範例介紹如何使用 webpack-dev-server 與 react-hot-loader 來讓開發 React 專案更為快速方便。如果你是剛開始使用 Webpack 的開發者，建議先讀完 <a href="https://github.com/petehunt/webpack-howto">Webpack howto</a> 或 <a href="https://rhadow.github.io/2015/03/23/webpackIntro/">如何使用 Webpack 模組整合工具</a> 熟悉 Webpack 後再來使用各式各樣的 loader。</p>
+
+<p><strong>2016-02-24 更新： 由於版本問題造成大家無法成功使用文章中的程式碼感到抱歉，以下已將版本號補上。最新的開發環境建議參考 <a href="https://github.com/gaearon/react-transform-boilerplate">react-transform-boilerplate</a>。</strong></p>
+
+<h2 id="webpack-dev-server-與-react-hot-loader-是什麼">webpack-dev-server 與 react-hot-loader 是什麼</h2>
+
+<p><a href="https://github.com/webpack/webpack-dev-server">webpack-dev-server</a> 是個小型的 node.js express server，主要用來跑專案內的檔案，同時提供 LiveReload 的功能。<a href="https://github.com/gaearon/react-hot-loader">react-hot-loader</a> 則是可以在不改變 React 元件的 state 下，將更改過程式碼的元件直接更新到畫面上。</p>
+
+<h2 id="準備">準備</h2>
+
+<p>在專案目錄內先使用 <code class="language-plaintext highlighter-rouge">npm init</code> 產生 <code class="language-plaintext highlighter-rouge">package.json</code> 再透過 <code class="language-plaintext highlighter-rouge">npm install webpack@1.12.14 webpack-dev-server@1.14.1 react-hot-loader@1.3.0 babel-loader@5.4.0 react@0.13.3 --save-dev</code> 指令安裝 webpack，webpack-dev-server，react-hot-loader，react 和 babel-loader，並在專案目錄下加入檔案與資料夾並整理如以下結構:</p>
+
+<ul>
+  <li>/app
+    <ul>
+      <li>main.js</li>
+      <li>TestOne.js</li>
+      <li>TestTwo.js</li>
+    </ul>
+  </li>
+  <li>/build
+    <ul>
+      <li>bundle.js (會透過 webpack 自動生成)</li>
+      <li>index.html</li>
+    </ul>
+  </li>
+  <li>package.json</li>
+  <li>webpack.config.js</li>
+</ul>
+
+<p>順帶一提，babel-loader 是用來解譯 jsx 與 ES6 語法的 loader。</p>
+
+<p>接著，將以下程式碼貼到對應的檔案內容內:</p>
+
+<p>main.js</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/* main.js */</span>
+
+<span class="dl">'</span><span class="s1">use strict</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">var</span> <span class="nx">React</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">react</span><span class="dl">'</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">TestOne</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">./TestOne.js</span><span class="dl">'</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">TestTwo</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">./TestTwo.js</span><span class="dl">'</span><span class="p">);</span>
+
+<span class="kd">var</span> <span class="nx">Main</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">createClass</span><span class="p">({</span>
+    <span class="na">getInitialState</span><span class="p">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="p">{</span>
+          <span class="na">switch</span><span class="p">:</span> <span class="kc">true</span>
+        <span class="p">};</span>
+    <span class="p">},</span>
+    <span class="nx">_toggle</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">setState</span><span class="p">({</span>
+            <span class="na">switch</span><span class="p">:</span> <span class="o">!</span><span class="k">this</span><span class="p">.</span><span class="nx">state</span><span class="p">.</span><span class="k">switch</span>
+        <span class="p">});</span>
+    <span class="p">},</span>
+    <span class="nx">render</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+                <span class="o">&lt;</span><span class="nx">input</span> <span class="nx">type</span><span class="o">=</span><span class="dl">"</span><span class="s2">button</span><span class="dl">"</span> <span class="nx">onClick</span><span class="o">=</span><span class="p">{</span><span class="k">this</span><span class="p">.</span><span class="nx">_toggle</span><span class="p">}</span> <span class="nx">value</span><span class="o">=</span><span class="dl">"</span><span class="s2">Press Me!</span><span class="dl">"</span><span class="o">/&gt;</span>
+                <span class="p">{</span><span class="k">this</span><span class="p">.</span><span class="nx">state</span><span class="p">.</span><span class="k">switch</span> <span class="p">?</span> <span class="o">&lt;</span><span class="nx">TestOne</span> <span class="o">/&gt;</span> <span class="p">:</span> <span class="o">&lt;</span><span class="nx">TestTwo</span> <span class="o">/&gt;</span><span class="p">}</span>
+            <span class="o">&lt;</span><span class="sr">/div&gt;     </span><span class="err"> 
+</span>        <span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">});</span>
+
+<span class="nx">React</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span><span class="o">&lt;</span><span class="nx">Main</span> <span class="o">/&gt;</span><span class="p">,</span> <span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>TestOne.js</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/* TestOne.js */</span>
+
+<span class="dl">'</span><span class="s1">use strict</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">var</span> <span class="nx">React</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">react</span><span class="dl">'</span><span class="p">);</span>
+
+<span class="kd">var</span> <span class="nx">TestOne</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">createClass</span><span class="p">({</span>
+    <span class="nx">render</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="cm">/* jshint ignore: start*/</span>
+            <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span><span class="nx">Hello</span> <span class="nx">I</span> <span class="nx">am</span> <span class="nx">TestOne</span> <span class="nx">Component</span><span class="o">&lt;</span><span class="sr">/div</span><span class="err">&gt;
+</span>            <span class="cm">/* jshint ignore: end*/</span>
+        <span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">});</span>
+
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="nx">TestOne</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>TestTwo.js</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/* TestTwo.js */</span>
+
+<span class="dl">'</span><span class="s1">use strict</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">var</span> <span class="nx">React</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">react</span><span class="dl">'</span><span class="p">);</span>
+
+<span class="kd">var</span> <span class="nx">TestTwo</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">createClass</span><span class="p">({</span>
+    <span class="nx">render</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="cm">/* jshint ignore: start*/</span>
+            <span class="o">&lt;</span><span class="nx">h1</span><span class="o">&gt;</span><span class="nx">Hello</span> <span class="nx">I</span> <span class="nx">am</span> <span class="nx">TestTwo</span> <span class="nx">Component</span><span class="o">&lt;</span><span class="sr">/h1</span><span class="err">&gt;
+</span>            <span class="cm">/* jshint ignore: end*/</span>
+        <span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">});</span>
+
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="nx">TestTwo</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>index.html</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;!DOCTYPE html&gt;</span>
+<span class="nt">&lt;html&gt;</span>
+
+<span class="nt">&lt;head&gt;</span>
+    <span class="nt">&lt;meta</span> <span class="na">charset=</span><span class="s">"UTF-8"</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;/head&gt;</span>
+
+<span class="nt">&lt;body&gt;</span>
+    <span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"bundle.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
+<span class="nt">&lt;/body&gt;</span>
+
+<span class="nt">&lt;/html&gt;</span>
+</code></pre></div></div>
+
+<p>webpack.config.js</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">path</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">path</span><span class="dl">'</span><span class="p">);</span>
+
+<span class="kd">var</span> <span class="nx">config</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="na">entry</span><span class="p">:</span> <span class="p">[</span><span class="nx">path</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">__dirname</span><span class="p">,</span> <span class="dl">'</span><span class="s1">app/main.js</span><span class="dl">'</span><span class="p">)],</span>
+    <span class="na">output</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">path</span><span class="p">:</span> <span class="nx">path</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">__dirname</span><span class="p">,</span> <span class="dl">'</span><span class="s1">build</span><span class="dl">'</span><span class="p">),</span>
+        <span class="na">filename</span><span class="p">:</span> <span class="dl">'</span><span class="s1">bundle.js</span><span class="dl">'</span>
+    <span class="p">},</span>
+    <span class="na">module</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">loaders</span><span class="p">:</span> <span class="p">[{</span>
+            <span class="na">test</span><span class="p">:</span> <span class="sr">/</span><span class="se">\.</span><span class="sr">js$/</span><span class="p">,</span>
+            <span class="na">loaders</span><span class="p">:</span> <span class="p">[</span><span class="dl">'</span><span class="s1">babel</span><span class="dl">'</span><span class="p">]</span>
+        <span class="p">}]</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="nx">config</span><span class="p">;</span>
+
+</code></pre></div></div>
+
+<p>最後在 <code class="language-plaintext highlighter-rouge">package.json</code> 內做修改:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="dl">"</span><span class="s2">scripts</span><span class="dl">"</span><span class="p">:</span> <span class="p">{</span>
+    <span class="dl">"</span><span class="s2">test</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">echo </span><span class="se">\"</span><span class="s2">Error: no test specified</span><span class="se">\"</span><span class="s2"> &amp;&amp; exit 1</span><span class="dl">"</span><span class="p">,</span>
+    <span class="dl">"</span><span class="s2">build</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">webpack</span><span class="dl">"</span> <span class="c1">//新加入這行</span>
+<span class="p">},</span>
+</code></pre></div></div>
+<p>當執行 <code class="language-plaintext highlighter-rouge">npm run build</code> 後，系統會執行 <code class="language-plaintext highlighter-rouge">webpack</code> 的指令並打包，開啟 index.html 後就能看到程式正確執行。</p>
+
+<h2 id="使用-webpack-dev-server-實現-livereload">使用 webpack-dev-server 實現 LiveReload</h2>
+
+<p>現階段每當我們更改程式碼並想要看到結果時，就必須要輸入 <code class="language-plaintext highlighter-rouge">npm run build</code> 一次，還要到瀏覽器點重新整理才能看到變動後的成果。還好，webpack-dev-server 為我們省去了這個麻煩。</p>
+
+<p>首先，先到 <code class="language-plaintext highlighter-rouge">package.json</code> 內加入一個新 <code class="language-plaintext highlighter-rouge">dev</code> 的指令:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="dl">"</span><span class="s2">scripts</span><span class="dl">"</span><span class="p">:</span> <span class="p">{</span>
+    <span class="dl">"</span><span class="s2">test</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">echo </span><span class="se">\"</span><span class="s2">Error: no test specified</span><span class="se">\"</span><span class="s2"> &amp;&amp; exit 1</span><span class="dl">"</span><span class="p">,</span>
+    <span class="dl">"</span><span class="s2">build</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">webpack</span><span class="dl">"</span><span class="p">,</span>
+    <span class="dl">"</span><span class="s2">dev</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">webpack-dev-server --devtool eval --progress --colors --hot --content-base build</span><span class="dl">"</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p><code class="language-plaintext highlighter-rouge">dev</code>內的指令解釋如下:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">webpack-dev-server</code> 會在 localhost:8080 建立起專案的 server</li>
+  <li><code class="language-plaintext highlighter-rouge">--devtool eval</code> 會顯示出發生錯誤的行數與檔案名稱</li>
+  <li><code class="language-plaintext highlighter-rouge">--progress</code> 會顯示出打包的過程</li>
+  <li><code class="language-plaintext highlighter-rouge">--colors</code> 會幫 webpack 顯示的訊息加入顏色</li>
+  <li><code class="language-plaintext highlighter-rouge">--content-based build</code> 指向專案最終輸出的資料夾</li>
+</ul>
+
+<p>接著更新 <code class="language-plaintext highlighter-rouge">index.html</code> :</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;!DOCTYPE html&gt;</span>
+<span class="nt">&lt;html&gt;</span>
+
+<span class="nt">&lt;head&gt;</span>
+    <span class="nt">&lt;meta</span> <span class="na">charset=</span><span class="s">"UTF-8"</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;/head&gt;</span>
+
+<span class="nt">&lt;body&gt;</span>
+    <span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"http://localhost:8080/webpack-dev-server.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
+    <span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"bundle.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
+<span class="nt">&lt;/body&gt;</span>
+
+<span class="nt">&lt;/html&gt;</span>
+</code></pre></div></div>
+
+<p>再來到 <code class="language-plaintext highlighter-rouge">webpack.config.js</code> 的 <code class="language-plaintext highlighter-rouge">entry</code> 屬性內加入 <code class="language-plaintext highlighter-rouge">'webpack/hot/dev-server'</code>如下:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">path</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">path</span><span class="dl">'</span><span class="p">);</span>
+
+<span class="kd">var</span> <span class="nx">config</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="na">entry</span><span class="p">:</span> <span class="p">[</span><span class="dl">'</span><span class="s1">webpack/hot/dev-server</span><span class="dl">'</span><span class="p">,</span> <span class="nx">path</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">__dirname</span><span class="p">,</span> <span class="dl">'</span><span class="s1">app/main.js</span><span class="dl">'</span><span class="p">)],</span>
+    <span class="na">output</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">path</span><span class="p">:</span> <span class="nx">path</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">__dirname</span><span class="p">,</span> <span class="dl">'</span><span class="s1">build</span><span class="dl">'</span><span class="p">),</span>
+        <span class="na">filename</span><span class="p">:</span> <span class="dl">'</span><span class="s1">bundle.js</span><span class="dl">'</span>
+    <span class="p">},</span>
+    <span class="na">module</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">loaders</span><span class="p">:</span> <span class="p">[{</span>
+            <span class="na">test</span><span class="p">:</span> <span class="sr">/</span><span class="se">\.</span><span class="sr">js$/</span><span class="p">,</span>
+            <span class="na">loaders</span><span class="p">:</span> <span class="p">[</span><span class="dl">'</span><span class="s1">babel</span><span class="dl">'</span><span class="p">]</span>
+        <span class="p">}]</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="nx">config</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>這樣就完成 LiveReload 的功能囉，各位可以在執行 <code class="language-plaintext highlighter-rouge">npm run dev</code> 後到 <a href="http://localhost:8080/">http://localhost:8080/</a> 檢查是否有正確跑起來，也可以試著在程式碼內做些改變，並觀察畫面是否有跟著變動。</p>
+
+<h2 id="加入-react-hot-loader">加入 react-hot-loader</h2>
+
+<p>如果你有跟著以上每一步做的話，程式跑起來後應該會有一個按鈕和 “Hello, I’m TestOne Component” 的字出現在畫面上。
+重複點擊按鈕，”Hello, I’m TestOne Component” 和 “Hello, I’m TestTwo Component” 會輪流出現在畫面上。</p>
+
+<p>現在請將畫面切到顯示 “Hello, I’m TestTwo Component” ，並到 <code class="language-plaintext highlighter-rouge">TestTwo.js</code> 將 “Hello, I’m TestTwo Component” 改為 “Hello” 後儲存。完成後，會發現瀏覽器畫面會回到最初的 “Hello, I’m TestOne Component”，這是因為 LiveReload 會重新整理畫面並將 React 元件的 state 重設回到初始值。</p>
+
+<p>react-hot-loader 的功用就是在不清除 state 的狀態下更新畫面，讓我們趕快來看看該如何達成這個效果吧。</p>
+
+<p>首先，修改 <code class="language-plaintext highlighter-rouge">webpack.config.js</code> 內的 <code class="language-plaintext highlighter-rouge">entry</code> 屬性如下:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">entry</span><span class="p">:</span> <span class="p">[</span>
+    <span class="dl">'</span><span class="s1">webpack-dev-server/client?http://localhost:8080</span><span class="dl">'</span><span class="p">,</span>
+    <span class="dl">'</span><span class="s1">webpack/hot/only-dev-server</span><span class="dl">'</span><span class="p">,</span>
+    <span class="nx">path</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">__dirname</span><span class="p">,</span> <span class="dl">'</span><span class="s1">app/main.js</span><span class="dl">'</span><span class="p">)</span>
+<span class="p">]</span>
+</code></pre></div></div>
+
+<p>再來修改 <code class="language-plaintext highlighter-rouge">module</code> 屬性如下:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">module</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nl">loaders</span><span class="p">:</span> <span class="p">[{</span>
+        <span class="na">test</span><span class="p">:</span> <span class="sr">/</span><span class="se">\.</span><span class="sr">js$/</span><span class="p">,</span>
+        <span class="na">loaders</span><span class="p">:</span> <span class="p">[</span><span class="dl">'</span><span class="s1">react-hot</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">babel</span><span class="dl">'</span><span class="p">],</span>
+        <span class="na">include</span><span class="p">:</span> <span class="nx">path</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="nx">__dirname</span><span class="p">,</span> <span class="dl">'</span><span class="s1">app</span><span class="dl">'</span><span class="p">)</span>
+    <span class="p">}]</span>
+<span class="p">},</span>
+</code></pre></div></div>
+
+<p>這部分要特別注意的地方是一定要加入 <code class="language-plaintext highlighter-rouge">include: path.join(__dirname, 'app')</code>，不然 webpack 會把 <code class="language-plaintext highlighter-rouge">node_modules</code> 內的 js 檔都透過 react-hot-loader 跑一遍，會因此導致 Cannot read property ‘NODE_ENV’ of undefined 錯誤造成程式無法正常運作。</p>
+
+<p>最後一步，在 <code class="language-plaintext highlighter-rouge">webpack.config.js</code> 內加入以下屬性，別忘了要先宣告 <code class="language-plaintext highlighter-rouge">var webpack = require('webpack');</code>:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">plugins</span><span class="p">:</span> <span class="p">[</span>
+    <span class="c1">//new webpack.HotModuleReplacementPlugin(),</span>
+    <span class="k">new</span> <span class="nx">webpack</span><span class="p">.</span><span class="nx">NoErrorsPlugin</span><span class="p">()</span>
+<span class="p">]</span>
+</code></pre></div></div>
+
+<p>這邊的 <code class="language-plaintext highlighter-rouge">webpack.NoErrorsPlugin()</code> 是選擇性的，主要的功能是當更改完的程式碼有語法錯誤時不要重新整理。
+當錯誤修好後，畫面會自動重新整理。</p>
+
+<p><code class="language-plaintext highlighter-rouge">new webpack.HotModuleReplacementPlugin()</code> 則是當不使用 webpack-dev-server 的 inline-mode 時才需要加入。本例是使用 inline-mode，你可以試著把註解掉的部分加回程式裡，當元件在做更新時，會出現 <code class="language-plaintext highlighter-rouge">Uncaught RangeError: Maximum call stack size exceeded</code> 的錯誤訊息。inline-mode 詳情請參考 <a href="http://webpack.github.io/docs/webpack-dev-server.html">webpack-dev-server 說明</a>。</p>
+
+<p>現在執行 <code class="language-plaintext highlighter-rouge">npm run dev</code> 後再一次做本段落最開始的實驗，就會發現更改程式碼後，畫面不會再回到首頁了。</p>
+
+<h2 id="總結">總結</h2>
+
+<p>最近使用 webpack 的開發者越來越多，如果想深入了解的話不妨多搜尋一下網路上的教學，會發現它能夠完成的事情其實很多。如果在實作以上範例有碰到問題或有更好的建議的話，歡迎各位留言討論。</p>
+:ET

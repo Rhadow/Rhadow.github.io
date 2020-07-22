@@ -1,0 +1,287 @@
+I"%?<p>Recently, I found <a href="https://github.com/microsoft/QuantumKatas">QuantumKata</a> which is a series of quantum programming questions that teaches the concept of quantum computing. The programming language used in this repository is Q# released by Microsoft. Although the repo claims itself as a tutorial, I find it lacks of explainations on the concept. If you are completly new to quantum computing, I would suggest to first go over the <a href="https://www.quantum-quest.nl/">Quantum Quest</a> lecture notes (super helpful!) then come back to these katas.</p>
+
+<p>This blog series will record my solution to the katas in each section. This first post is going to be focusing on basic gates. Questions with a star beside the title means it is slightly challenging to solve.
+Since Q# is new to me and might be new to you, it would be better to keep the <a href="https://docs.microsoft.com/en-us/quantum/language/?view=qsharp-preview">docs</a> around. The namespace which will be referencing a lot in this post is <a href="https://docs.microsoft.com/en-us/qsharp/api/qsharp/microsoft.quantum.intrinsic?view=qsharp-preview">intrinsic</a>.</p>
+
+<h2 id="part-i-single-qubit-gates">Part I. Single-Qubit Gates</h2>
+
+<h3 id="task-11-state-flip-left-0-right-to-left-1-right-and-vice-versa">Task 1.1 State flip: \(\left| 0 \right&gt;\) to \(\left| 1 \right&gt;\) and vice versa</h3>
+
+<blockquote>
+  <p>Input: A qubit in state \(α \left| 0 \right&gt; + β \left| 1 \right&gt;\)</p>
+
+  <p>Goal:  Change the state of the qubit to \(α \left| 1 \right&gt; + β \left| 0 \right&gt;\)</p>
+</blockquote>
+
+<p>This question asks us to flip the qubit state, just like the not gate in classical computer. We can solve it easily by the X gate. It actually provides the solution in the comments.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>operation StateFlip (q : Qubit) : Unit {
+    body (...) {
+        X(q);
+    }
+    adjoint self;
+}
+</code></pre></div></div>
+
+<h3 id="task-12-basis-change-left-0-right-to-left--right-and-left-1-right-to-left---right">Task 1.2 Basis change: \(\left| 0 \right&gt;\) to \(\left| + \right&gt;\) and \(\left| 1 \right&gt;\) to \(\left| - \right&gt;\)</h3>
+
+<blockquote>
+  <p>Input: A qubit in state \(α \left| 0 \right&gt; + β \left| 1 \right&gt;\)</p>
+
+  <p>Goal:  Change the state of the qubit as follows:</p>
+
+  <p>If the qubit is in state \(\left| 0 \right&gt;\), change its state to \(|+⟩ = \frac{\left| 0 \right&gt; + \left| 1 \right&gt;}{\sqrt{2}}\)</p>
+
+  <p>If the qubit is in state \(\left| 1 \right&gt;\), change its state to \(|-⟩ = \frac{\left| 0 \right&gt; - \left| 1 \right&gt;}{\sqrt{2}}\)</p>
+</blockquote>
+
+<p>If you did go over the quantum quest notes, this question is a no brainer. Hadamard (H) gate does exactly what the question asks. Also the inverse of Hadmard gate is itself, applying it twice will give us the original input.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>operation BasisChange (q : Qubit) : Unit {
+    body (...) {
+        H(q);
+    }
+    adjoint self;
+}
+</code></pre></div></div>
+
+<h3 id="task-13-sign-flip-left--right-to-left---right-and-vice-versa">Task 1.3 Sign flip: \(\left| + \right&gt;\) to \(\left| - \right&gt;\) and vice versa</h3>
+
+<blockquote>
+  <p>Input: A qubit in state \(α \left| 0 \right&gt; + β \left| 1 \right&gt;\)</p>
+
+  <p>Goal:  Change the qubit state to \(α \left| 0 \right&gt; - β \left| 1 \right&gt;\)</p>
+</blockquote>
+
+<p>Z gates will add a minus sign if the state is \(\left| 1 \right&gt;\) and leave \(\left| 0 \right&gt;\) unchanged. Perfect gate for this kata.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>operation SignFlip (q : Qubit) : Unit { 
+    body (...) {
+        Z(q);
+    }
+    adjoint self;
+}
+</code></pre></div></div>
+
+<h3 id="task-14-amplitude-change-left-0-right-to-costhetaleft-0-right--sinthetaleft-1-right">Task 1.4* Amplitude change: \(\left| 0 \right&gt;\) to \(cos(\theta)\left| 0 \right&gt; + sin(\theta)\left| 1 \right&gt;\)</h3>
+
+<blockquote>
+  <p>Inputs: A qubit in state \(α \left| 0 \right&gt; + β \left| 1 \right&gt;\) and angle \(\theta\)</p>
+
+  <p>Goal:  Change the state of the qubit as follows:</p>
+
+  <p>If the qubit is in state \(α \left| 0 \right&gt;\) change its state to \(cos(\theta)\left| 0 \right&gt; + sin(\theta)\left| 1 \right&gt;\)</p>
+
+  <p>If the qubit is in state |1⟩, change its state to \(-sin(\theta)\left| 0 \right&gt; + cos(\theta)\left| 1 \right&gt;\)</p>
+</blockquote>
+
+<p>Again, if you did go over the quantum quest notes, you will spot this is the result of rotation. However, in the lecture notes, it didn’t mention which axis the qubit was rotated around. After reading the <a href="https://docs.microsoft.com/en-us/qsharp/api/qsharp/microsoft.quantum.intrinsic?view=qsharp-preview">docs</a>, the <code class="language-plaintext highlighter-rouge">Ry</code> seems to be the correct gate since the matrix matches the amplitude value. Note, the angle we passed in needs to be double since <code class="language-plaintext highlighter-rouge">Ry</code> it divides the angle we passed in by two. If you are wondering why they divide the angle by two, please look up Bloch Sphere and how rotation is done on it.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>operation AmplitudeChange (q : Qubit, alpha : Double) : Unit
+is Adj {        
+    Ry(alpha * 2.0, q);
+}
+</code></pre></div></div>
+
+<h3 id="task-15-phase-flip">Task 1.5 Phase flip</h3>
+
+<blockquote>
+  <p>Input: A qubit in state \(β \left| 0 \right&gt; + γ \left| 1 \right&gt;\)</p>
+
+  <p>Goal:  Change the qubit state to \(β \left| 0 \right&gt; + iγ \left| 1 \right&gt;\)</p>
+</blockquote>
+
+<p>Going through each gate in the <a href="https://docs.microsoft.com/en-us/qsharp/api/qsharp/microsoft.quantum.intrinsic?view=qsharp-preview">doc</a> and match the matrix with the result amplitude will find S gate is the solution.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>operation PhaseFlip (q : Qubit) : Unit 
+is Adj {
+    S(q);
+}
+</code></pre></div></div>
+
+<h3 id="task-16-phase-change">Task 1.6* Phase change</h3>
+
+<blockquote>
+  <p>Input: A qubit in state \(β \left| 0 \right&gt; + γ \left| 1 \right&gt;\) and Angle \(\alpha\)</p>
+
+  <p>Goal:  Change the state of the qubit as follows:</p>
+
+  <p>If the qubit is in state \(\left| 0 \right&gt;\), don’t change its state</p>
+
+  <p>If the qubit is in state \(\left| 1 \right&gt;\), change its state to \(e^{i\alpha}\left| 1 \right&gt;\)</p>
+</blockquote>
+
+<p>Again, going through the <a href="https://docs.microsoft.com/en-us/qsharp/api/qsharp/microsoft.quantum.intrinsic?view=qsharp-preview">doc</a> and <code class="language-plaintext highlighter-rouge">R1</code> gate is doing exactly this kata is asking.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>operation PhaseChange (q : Qubit, alpha : Double) : Unit
+is Adj {
+    R1(alpha, q);
+}
+</code></pre></div></div>
+
+<h3 id="task-17-bell-state-change---1">Task 1.7 Bell state change - 1</h3>
+
+<blockquote>
+  <p>Input: Two entangled qubits in Bell state \(|Φ⁺⟩ = \frac{\left| 00 \right&gt; + \left| 11 \right&gt;}{\sqrt{2}}\)</p>
+
+  <p>Goal: Change the two-qubit state to \(|Φ⁻⟩ = \frac{\left| 00 \right&gt; - \left| 11 \right&gt;}{\sqrt{2}}\)</p>
+</blockquote>
+
+<p>Transforming between bell state is an important prerequisite before understanding super dense coding. Kata 1.7 - 1.9 shows how we can transform from \(|Φ⁺⟩ = \frac{\left| 00 \right&gt; + \left| 11 \right&gt;}{\sqrt{2}}\) to other three bell states. For this one, the target state is \(|Φ⁻⟩ = \frac{\left| 00 \right&gt; - \left| 11 \right&gt;}{\sqrt{2}}\). This can be achieved by applying Z gate to the first qubit.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>operation BellStateChange1 (qs : Qubit[]) : Unit
+is Adj {
+    Z(qs[0]);
+}
+</code></pre></div></div>
+
+<h3 id="task-18-bell-state-change---2">Task 1.8 Bell state change - 2</h3>
+
+<blockquote>
+  <p>Input: Two entangled qubits in Bell state \(|Φ⁺⟩ = \frac{\left| 00 \right&gt; + \left| 11 \right&gt;}{\sqrt{2}}\)</p>
+
+  <p>Goal: Change the two-qubit state to \(|Ψ⁺⟩ = \frac{\left| 01 \right&gt; + \left| 10 \right&gt;}{\sqrt{2}}\)</p>
+</blockquote>
+
+<p>This can be achieved by applying X gate to the first qubit.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>operation BellStateChange1 (qs : Qubit[]) : Unit
+is Adj {
+    X(qs[0]);
+}
+</code></pre></div></div>
+
+<h3 id="task-19-bell-state-change---3">Task 1.9 Bell state change - 3</h3>
+
+<blockquote>
+  <p>Input: Two entangled qubits in Bell state \(|Φ⁺⟩ = \frac{\left| 00 \right&gt; + \left| 11 \right&gt;}{\sqrt{2}}\)</p>
+
+  <p>Goal: Change the two-qubit state to \(|Ψ⁻⟩ = \frac{\left| 01 \right&gt; - \left| 10 \right&gt;}{\sqrt{2}}\)</p>
+</blockquote>
+
+<p>This one is a little tricky, We can achieve the goal state by first applying X gate to transform the state to \(|Ψ⁺⟩ = \frac{\left| 01 \right&gt; + \left| 10 \right&gt;}{\sqrt{2}}\) then Z gate on first qubit to flip the sign.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>operation BellStateChange1 (qs : Qubit[]) : Unit
+is Adj {
+    X(qs[0]);
+    Z(qs[0]);
+}
+</code></pre></div></div>
+
+<p>Super dense coding allows quantum computers to transfer 2 classic bits information with only one qubit. You can read more at <a href="https://medium.com/qiskit/demystifying-superdense-coding-41d46401910e">demystifying superdense coding</a>. It also explains how to transform between bell states which is the solution of 1.7 - 1.9.</p>
+
+<h2 id="part-ii-multi-qubit-gates">Part II. Multi-Qubit Gates</h2>
+
+<h3 id="task-21-two-qubit-gate---1">Task 2.1 Two-qubit gate - 1</h3>
+
+<blockquote>
+  <p>Input: Two unentangled qubits:</p>
+
+  <p>The first qubit will be in state \(α \left| 0 \right&gt; + β \left| 1 \right&gt;\), the second - in state \(\left| 0 \right&gt;\)</p>
+
+  <p>Goal:  Change the two-qubit state to \(α \left| 00 \right&gt; + β \left| 11 \right&gt;\)</p>
+</blockquote>
+
+<p>Typical use case of CNOT gate.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>operation TwoQubitGate1 (qs : Qubit[]) : Unit {
+    body (...) {
+        CNOT(qs[0], qs[1]);
+    }
+    adjoint self;
+}
+</code></pre></div></div>
+
+<h3 id="task-22-two-qubit-gate---2">Task 2.2 Two-qubit gate - 2</h3>
+
+<blockquote>
+  <p>Input: Two qubits in state \(\frac{\left| 00 \right&gt; + \left| 01 \right&gt; + \left| 10 \right&gt; + \left| 11 \right&gt;}{2}\)</p>
+
+  <p>Goal:  Change the two-qubit state to \(\frac{\left| 00 \right&gt; + \left| 01 \right&gt; + \left| 10 \right&gt; - \left| 11 \right&gt;}{2}\)</p>
+</blockquote>
+
+<p>We only need to flip the sign of the last state and already know this can be achieved by Z gate. To complete this kata, we need some extra conditional check on the first bit, so the gate we need is a Controlled-Z gate and luckily Q# provides CZ directly.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>operation TwoQubitGate2 (qs : Qubit[]) : Unit {
+    body (...) {
+        CZ(qs[0], qs[1]);
+    }
+    adjoint self;
+}
+</code></pre></div></div>
+
+<h3 id="task-23-two-qubit-gate---3">Task 2.3 Two-qubit gate - 3</h3>
+
+<blockquote>
+  <p>Input: Two qubits in state \(\frac{\alpha\left| 00 \right&gt; + \beta\left| 01 \right&gt; + \gamma\left| 10 \right&gt; + \delta\left| 11 \right&gt;}{2}\)</p>
+
+  <p>Goal: Change the two-qubit state to \(\frac{\alpha\left| 00 \right&gt; + \beta\left| 10 \right&gt; + \gamma\left| 01 \right&gt; + \delta\left| 11 \right&gt;}{2}\)</p>
+</blockquote>
+
+<p>This task ask us to swap the state between a pair of qubits. Q# does have a <a href="https://docs.microsoft.com/en-us/qsharp/api/qsharp/microsoft.quantum.intrinsic.swap?view=qsharp-preview">SWAP</a> gate, however, the kata also ask us to solve it without using SWAP.
+I started by thinking how to transform from \(\left| 01 \right&gt;\) to \(\left| 10 \right&gt;\), which is:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>CNOT(qs[1], qs[0]);
+CNOT(qs[0], qs[1]);
+</code></pre></div></div>
+
+<p>Then adding extra gate to fulfill the two lefted cases. My final solution is:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>operation TwoQubitGate3 (qs : Qubit[]) : Unit {
+    body (...) {
+        CNOT(qs[1], qs[0]);
+        CNOT(qs[0], qs[1]);
+        CNOT(qs[1], qs[0]);
+    }
+    adjoint self;
+}
+</code></pre></div></div>
+
+<h3 id="task-24-toffoli-gate">Task 2.4 Toffoli gate</h3>
+
+<blockquote>
+  <p>Input: Three qubits in an arbitrary three-qubit state \(\alpha\left| 000 \right&gt; + \beta\left| 001 \right&gt; + \gamma\left| 010 \right&gt; + \delta\left| 011 \right&gt; + \epsilon\left| 100 \right&gt; + \zeta\left| 101 \right&gt; + \eta\left| 110 \right&gt; + \theta\left| 111 \right&gt;\)</p>
+
+  <p>Goal: Flip the state of the third qubit if the state of the first two is \(\left| 11 \right&gt;\): i.e., change the three-qubit state to: \(\alpha\left| 000 \right&gt; + \beta\left| 001 \right&gt; + \gamma\left| 010 \right&gt; + \delta\left| 011 \right&gt; + \epsilon\left| 100 \right&gt; + \zeta\left| 101 \right&gt; + \eta\left| 111 \right&gt; + \theta\left| 110 \right&gt;\)</p>
+</blockquote>
+
+<p>Famous Toffoli gate. Q# named it <code class="language-plaintext highlighter-rouge">CCNOT</code>.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>operation ToffoliGate (qs : Qubit[]) : Unit {
+    body (...) {
+        CCNOT(qs[0], qs[1], qs[2]);
+    }
+    adjoint self;
+}
+</code></pre></div></div>
+
+<h3 id="task-25-fredkin-gate">Task 2.5 Fredkin gate</h3>
+
+<blockquote>
+  <p>Input: Three qubits in an arbitrary three-qubit state \(\alpha\left| 000 \right&gt; + \beta\left| 001 \right&gt; + \gamma\left| 010 \right&gt; + \delta\left| 011 \right&gt; + \epsilon\left| 100 \right&gt; + \zeta\left| 101 \right&gt; + \eta\left| 110 \right&gt; + \theta\left| 111 \right&gt;\)</p>
+
+  <p>Goal:  Swap the states of second and third qubit if and only if the state of the first qubit is \(\left| 1 \right&gt;\): \(\alpha\left| 000 \right&gt; + \beta\left| 001 \right&gt; + \gamma\left| 010 \right&gt; + \delta\left| 011 \right&gt; + \epsilon\left| 100 \right&gt; + \zeta\left| 110 \right&gt; + \eta\left| 101 \right&gt; + \theta\left| 111 \right&gt;\)</p>
+</blockquote>
+
+<p>I spent quite a lot of time on this one. Then I realized, this is just the swap gate in question 2.3 with a controlled bit set to the first qubit. This kata can be solved with three Tofolli gate. I then simplified the solution to use two CNOT gate as the first and last CCNOT can be reduced to CNOT. I found it is easier to understand with below image. The red square is the swap circuit.</p>
+
+<p><img src="https://rhadow.github.io/public/quantum_kata/fredkin_circuit.png" alt="Fredkin gate circuit" /></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>operation FredkinGate (qs : Qubit[]) : Unit {
+    body (...) {
+        // CCNOT(qs[0], qs[1], qs[2]);
+        // CCNOT(qs[0], qs[2], qs[1]);
+        // CCNOT(qs[0], qs[1], qs[2]);
+
+        CNOT(qs[1], qs[2]);
+        CCNOT(qs[0], qs[2], qs[1]);
+        CNOT(qs[1], qs[2]);
+    }
+    adjoint self;
+}
+</code></pre></div></div>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>This first set of katas introduced some basic gates of quantum computing. There are not a lot of thinking through this exercises as most of them is just finding the right gate to use. In the following sets, there will be more and more thinking involved base on the knowledge we gained here.</p>
+:ET

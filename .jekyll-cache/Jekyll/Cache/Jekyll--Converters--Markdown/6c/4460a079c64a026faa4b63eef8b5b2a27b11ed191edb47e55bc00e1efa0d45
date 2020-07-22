@@ -1,0 +1,228 @@
+I"�f<p>繼<a href="https://rhadow.github.io/2015/04/24/Jest-with-React/">上一篇</a>分享了如何使用 <a href="https://facebook.github.io/jest/">Jest</a> 對 React 元件做單元測試，本篇將把焦點專注在如何對 <a href="https://facebook.github.io/flux/">Flux</a> 做單元測試。對於測試來說，我們必須將被測的模組獨立於其他模組，因此，Jest 的自動模擬化將測試整個 Flux 設計模式的流程變得更為容易。</p>
+
+<h2 id="tldr">TL;DR</h2>
+
+<p>如果對你來說程式碼比文字更容易讀的話，本篇內所有的程式碼都放在<a href="https://github.com/Rhadow/Flux-Reflux-Practice">這裡</a>，請直接參考。</p>
+
+<h2 id="flux-簡介">Flux 簡介</h2>
+
+<p>Flux 主要是由 Action, Dispatcher, Store 與 View 所組成。使用者透過與 View 的互動，發送不同的 Action，再由 Dispatcher 將這些 Action 分配給各個 Store 來變更內部資料，當 Store 資料改變後，再將 View 更新做一次循環。如下圖所示：</p>
+
+<p><img src="http://blog.krawaller.se/img/flux-diagram.png" alt="Image of Flux" /></p>
+
+<p>以單元測試的角度來看，我們已經在<a href="https://rhadow.github.io/2015/04/24/Jest-with-React/">上一篇</a>解決了對 View (React 元件) 與 Action (是否正常發送) 的測試，Dispatcher 則是由官方提供。因此，我們真正需要寫單元測試的部分其實只有 Store 而已。</p>
+
+<h2 id="測試-store">測試 Store</h2>
+
+<p>首先讓我們大致看一下即將被測試的 Store：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="dl">'</span><span class="s1">use strict</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">var</span> <span class="nx">appDispatcher</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">../dispatcher/dispatcher.js</span><span class="dl">'</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">eventEmitter</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">events</span><span class="dl">'</span><span class="p">).</span><span class="nx">EventEmitter</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">constants</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">../constants/constants.js</span><span class="dl">'</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">_</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">underscore</span><span class="dl">'</span><span class="p">);</span>
+
+<span class="kd">var</span> <span class="nx">_userList</span> <span class="o">=</span> <span class="p">[{</span>
+    <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Howard</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">age</span><span class="p">:</span> <span class="mi">27</span>
+<span class="p">},</span> <span class="p">{</span>
+    <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Shaun</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">age</span><span class="p">:</span> <span class="mi">22</span>
+<span class="p">},</span> <span class="p">{</span>
+    <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Amy</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">age</span><span class="p">:</span> <span class="mi">26</span>
+<span class="p">}];</span>
+
+<span class="kd">var</span> <span class="nx">appStore</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">extend</span><span class="p">({},</span> <span class="nx">eventEmitter</span><span class="p">.</span><span class="nx">prototype</span><span class="p">,</span> <span class="p">{</span>
+    <span class="na">getUserList</span><span class="p">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">_userList</span><span class="p">;</span>
+    <span class="p">},</span>
+    <span class="na">addUser</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">user</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">_userList</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">user</span><span class="p">);</span>
+    <span class="p">},</span>
+    <span class="na">deleteUser</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">index</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">_userList</span><span class="p">.</span><span class="nx">splice</span><span class="p">(</span><span class="nx">index</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+    <span class="p">},</span>
+    <span class="na">emitChange</span><span class="p">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">emit</span><span class="p">(</span><span class="dl">'</span><span class="s1">change</span><span class="dl">'</span><span class="p">);</span>
+    <span class="p">},</span>
+    <span class="na">addChangeListener</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="dl">'</span><span class="s1">change</span><span class="dl">'</span><span class="p">,</span> <span class="nx">callback</span><span class="p">);</span>
+    <span class="p">},</span>
+    <span class="na">removeChangeListener</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">removeListener</span><span class="p">(</span><span class="dl">'</span><span class="s1">change</span><span class="dl">'</span><span class="p">,</span> <span class="nx">callback</span><span class="p">);</span>
+    <span class="p">},</span>
+<span class="p">});</span>
+
+<span class="nx">appDispatcher</span><span class="p">.</span><span class="nx">register</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">payload</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">action</span> <span class="o">=</span> <span class="nx">payload</span><span class="p">.</span><span class="nx">action</span><span class="p">;</span>
+    <span class="k">switch</span> <span class="p">(</span><span class="nx">action</span><span class="p">.</span><span class="nx">actionType</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">case</span> <span class="nx">constants</span><span class="p">.</span><span class="nx">ADD_USER</span><span class="p">:</span>
+            <span class="nx">appStore</span><span class="p">.</span><span class="nx">addUser</span><span class="p">(</span><span class="nx">action</span><span class="p">.</span><span class="nx">data</span><span class="p">);</span>
+            <span class="k">break</span><span class="p">;</span>
+        <span class="k">case</span> <span class="nx">constants</span><span class="p">.</span><span class="nx">DELETE_USER</span><span class="p">:</span>
+            <span class="nx">appStore</span><span class="p">.</span><span class="nx">deleteUser</span><span class="p">(</span><span class="nx">action</span><span class="p">.</span><span class="nx">data</span><span class="p">);</span>
+            <span class="k">break</span><span class="p">;</span>
+        <span class="nl">default</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="nx">appStore</span><span class="p">.</span><span class="nx">emitChange</span><span class="p">();</span>
+    <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
+<span class="p">});</span>
+
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="nx">appStore</span><span class="p">;</span>
+
+</code></pre></div></div>
+
+<p>這是一個簡單的 Store 搭配『加入新使用者』與『刪除使用者』這兩個 Action，同時預設有三個使用者已經存在。</p>
+
+<p>引用於 Facebook 官方的說法：</p>
+
+<blockquote>
+  <p>By design, stores can’t be modified from the outside. They have no setters. The only way new data can enter a store
+is through the callback it registers with the dispatcher.</p>
+</blockquote>
+
+<p>大致上的翻譯是：Store 的內部資料無法從外部直接修改，唯一將新資料加進 Store 的方法就是透過 dispatcher 註冊的回呼函式裡面的各個 Action 將資料帶入。以我們的例子來說就是以下這部分：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">appDispatcher</span><span class="p">.</span><span class="nx">register</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">payload</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">action</span> <span class="o">=</span> <span class="nx">payload</span><span class="p">.</span><span class="nx">action</span><span class="p">;</span>
+    <span class="k">switch</span> <span class="p">(</span><span class="nx">action</span><span class="p">.</span><span class="nx">actionType</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">case</span> <span class="nx">constants</span><span class="p">.</span><span class="nx">ADD_USER</span><span class="p">:</span>
+            <span class="nx">appStore</span><span class="p">.</span><span class="nx">addUser</span><span class="p">(</span><span class="nx">action</span><span class="p">.</span><span class="nx">data</span><span class="p">);</span>
+            <span class="k">break</span><span class="p">;</span>
+        <span class="k">case</span> <span class="nx">constants</span><span class="p">.</span><span class="nx">DELETE_USER</span><span class="p">:</span>
+            <span class="nx">appStore</span><span class="p">.</span><span class="nx">deleteUser</span><span class="p">(</span><span class="nx">action</span><span class="p">.</span><span class="nx">data</span><span class="p">);</span>
+            <span class="k">break</span><span class="p">;</span>
+        <span class="nl">default</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="nx">appStore</span><span class="p">.</span><span class="nx">emitChange</span><span class="p">();</span>
+    <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<p>由於需要模擬不同的 Action ，我們勢必需要在測試中將從以上回呼函式取出來，這樣才能丟進不同的 <code class="language-plaintext highlighter-rouge">payload</code> 來模擬不同的 Action。幸運的是，經過 Jest 模擬化 (mock) 過後的 <code class="language-plaintext highlighter-rouge">register()</code> 函式會有一個叫做 <code class="language-plaintext highlighter-rouge">mock</code> 的屬性。它會記錄著所有有關 <code class="language-plaintext highlighter-rouge">register()</code> 被呼叫的紀錄，包括次數，參數等等。於是，我們就可以使用以下程式碼將上述的回呼函式取出了。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">mockRegister</span> <span class="o">=</span> <span class="nx">appDispatcher</span><span class="p">.</span><span class="nx">register</span><span class="p">;</span>
+<span class="c1">//模擬化過後的 regeister()</span>
+
+<span class="kd">var</span> <span class="nx">mockRegisterInfo</span> <span class="o">=</span> <span class="nx">mockRegister</span><span class="p">.</span><span class="nx">mock</span><span class="p">;</span>
+<span class="c1">//找出記錄所有資訊的 mock 屬性</span>
+
+<span class="kd">var</span> <span class="nx">callsToRegister</span> <span class="o">=</span> <span class="nx">mockRegisterInfo</span><span class="p">.</span><span class="nx">calls</span><span class="p">;</span>
+<span class="c1">//找出呼叫紀錄</span>
+
+<span class="kd">var</span> <span class="nx">firstCall</span> <span class="o">=</span> <span class="nx">callsToRegister</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+<span class="c1">//取出第一次呼叫的紀錄</span>
+
+<span class="kd">var</span> <span class="nx">firstArgument</span> <span class="o">=</span> <span class="nx">firstCall</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+<span class="c1">//取出第一次呼叫的參數</span>
+
+<span class="kd">var</span> <span class="nx">callback</span> <span class="o">=</span> <span class="nx">firstArgument</span><span class="p">;</span>
+<span class="c1">//需要的結果</span>
+</code></pre></div></div>
+
+<p>如果上面的程式碼對你來說很陌生的話，建議可以閱讀 <a href="https://facebook.github.io/jest/docs/mock-functions.html#content">Jest 官方對 Mock Function 的說明</a>。在我們繼續之前，讓我們先簡化一下程式碼：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">callback</span> <span class="o">=</span> <span class="nx">appDispatcher</span><span class="p">.</span><span class="nx">register</span><span class="p">.</span><span class="nx">mock</span><span class="p">.</span><span class="nx">calls</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">];</span>
+</code></pre></div></div>
+
+<p>有了這個回呼函式之後，我們就可以隨心所欲的模擬各種 Action 丟入 Store 來做測試了！</p>
+
+<h2 id="整合">整合</h2>
+
+<p>接下來讓我們來看看完整的測試程式碼長得如何吧：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="dl">'</span><span class="s1">use strict</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="nx">jest</span><span class="p">.</span><span class="nx">dontMock</span><span class="p">(</span><span class="dl">'</span><span class="s1">../src/app/stores/appStore.js</span><span class="dl">'</span><span class="p">);</span>
+<span class="nx">jest</span><span class="p">.</span><span class="nx">dontMock</span><span class="p">(</span><span class="dl">'</span><span class="s1">underscore</span><span class="dl">'</span><span class="p">);</span>
+
+<span class="nx">describe</span><span class="p">(</span><span class="dl">'</span><span class="s1">appStore</span><span class="dl">'</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">appStore</span><span class="p">,</span>
+        <span class="nx">appDispatcher</span><span class="p">,</span>
+        <span class="nx">callback</span><span class="p">,</span>
+        <span class="nx">constants</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">../src/app/constants/constants.js</span><span class="dl">'</span><span class="p">),</span>
+        <span class="nx">addUserAction</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="na">action</span><span class="p">:</span> <span class="p">{</span>
+                <span class="na">actionType</span><span class="p">:</span> <span class="nx">constants</span><span class="p">.</span><span class="nx">ADD_USER</span><span class="p">,</span>
+                <span class="na">data</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Tester</span><span class="dl">'</span><span class="p">,</span>
+                    <span class="na">age</span><span class="p">:</span> <span class="mi">27</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="nx">deleteUserAction</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="na">action</span><span class="p">:</span> <span class="p">{</span>
+                <span class="na">actionType</span><span class="p">:</span> <span class="nx">constants</span><span class="p">.</span><span class="nx">DELETE_USER</span><span class="p">,</span>
+                <span class="na">data</span><span class="p">:</span> <span class="dl">'</span><span class="s1">replace me in test</span><span class="dl">'</span>
+            <span class="p">}</span>
+        <span class="p">};</span>
+
+    <span class="nx">beforeEach</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">appStore</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">../src/app/stores/appStore.js</span><span class="dl">'</span><span class="p">);</span>
+        <span class="nx">appDispatcher</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">../src/app/dispatcher/dispatcher.js</span><span class="dl">'</span><span class="p">);</span>
+        <span class="nx">callback</span> <span class="o">=</span> <span class="nx">appDispatcher</span><span class="p">.</span><span class="nx">register</span><span class="p">.</span><span class="nx">mock</span><span class="p">.</span><span class="nx">calls</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">];</span>
+    <span class="p">});</span>
+
+    <span class="nx">it</span><span class="p">(</span><span class="dl">'</span><span class="s1">should register a callback to store</span><span class="dl">'</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">expect</span><span class="p">(</span><span class="nx">appDispatcher</span><span class="p">.</span><span class="nx">register</span><span class="p">.</span><span class="nx">mock</span><span class="p">.</span><span class="nx">calls</span><span class="p">.</span><span class="nx">length</span><span class="p">).</span><span class="nx">toBe</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+    <span class="p">});</span>
+
+    <span class="nx">it</span><span class="p">(</span><span class="dl">'</span><span class="s1">should initialize with a preset data</span><span class="dl">'</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">expect</span><span class="p">(</span><span class="nx">appStore</span><span class="p">.</span><span class="nx">getUserList</span><span class="p">()).</span><span class="nx">toEqual</span><span class="p">([{</span>
+            <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Howard</span><span class="dl">'</span><span class="p">,</span>
+            <span class="na">age</span><span class="p">:</span> <span class="mi">27</span>
+        <span class="p">},</span> <span class="p">{</span>
+            <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Shaun</span><span class="dl">'</span><span class="p">,</span>
+            <span class="na">age</span><span class="p">:</span> <span class="mi">22</span>
+        <span class="p">},</span> <span class="p">{</span>
+            <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Amy</span><span class="dl">'</span><span class="p">,</span>
+            <span class="na">age</span><span class="p">:</span> <span class="mi">26</span>
+        <span class="p">}]);</span>
+    <span class="p">});</span>
+
+    <span class="nx">it</span><span class="p">(</span><span class="dl">'</span><span class="s1">should add a new user after addUserAction is fired</span><span class="dl">'</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">callback</span><span class="p">(</span><span class="nx">addUserAction</span><span class="p">);</span>
+        <span class="kd">var</span> <span class="nx">allUsers</span> <span class="o">=</span> <span class="nx">appStore</span><span class="p">.</span><span class="nx">getUserList</span><span class="p">();</span>
+        <span class="nx">expect</span><span class="p">(</span><span class="nx">allUsers</span><span class="p">.</span><span class="nx">length</span><span class="p">).</span><span class="nx">toBe</span><span class="p">(</span><span class="mi">4</span><span class="p">);</span>
+        <span class="nx">expect</span><span class="p">(</span><span class="nx">allUsers</span><span class="p">[</span><span class="nx">allUsers</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]).</span><span class="nx">toEqual</span><span class="p">({</span>
+            <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Tester</span><span class="dl">'</span><span class="p">,</span>
+            <span class="na">age</span><span class="p">:</span> <span class="mi">27</span>
+        <span class="p">});</span>
+    <span class="p">});</span>
+
+    <span class="nx">it</span><span class="p">(</span><span class="dl">'</span><span class="s1">should delete user according to index after deleteUserAction is fired</span><span class="dl">'</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">deleteUserAction</span><span class="p">.</span><span class="nx">action</span><span class="p">.</span><span class="nx">data</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+        <span class="nx">callback</span><span class="p">(</span><span class="nx">deleteUserAction</span><span class="p">);</span>
+        <span class="kd">var</span> <span class="nx">allUsers</span> <span class="o">=</span> <span class="nx">appStore</span><span class="p">.</span><span class="nx">getUserList</span><span class="p">();</span>
+        <span class="nx">expect</span><span class="p">(</span><span class="nx">allUsers</span><span class="p">.</span><span class="nx">length</span><span class="p">).</span><span class="nx">toBe</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+        <span class="nx">expect</span><span class="p">(</span><span class="nx">allUsers</span><span class="p">).</span><span class="nx">toEqual</span><span class="p">([{</span>
+            <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Howard</span><span class="dl">'</span><span class="p">,</span>
+            <span class="na">age</span><span class="p">:</span> <span class="mi">27</span>
+        <span class="p">},</span> <span class="p">{</span>
+            <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Amy</span><span class="dl">'</span><span class="p">,</span>
+            <span class="na">age</span><span class="p">:</span> <span class="mi">26</span>
+        <span class="p">}]);</span>
+    <span class="p">});</span>
+<span class="p">});</span>
+
+</code></pre></div></div>
+
+<p>整體的測試程式碼看起來其實非常直接明白，這也是單元測試的一個要點，讀起來必須要像說明文件一樣。</p>
+
+<p>這部分比較需要注意的地方有兩點：</p>
+
+<p>第一是我們在最開始特別告訴 Jest 除了不要模擬 (<code class="language-plaintext highlighter-rouge">dontMock()</code>) 這次測試的 Store 外，同時也不要模擬 underscore。
+原因是我們的 Store 是由 <code class="language-plaintext highlighter-rouge">_.extend</code> 方法所組成。透過 Jest 自動模擬過後的模組是不帶有任何邏輯的，因此，如果你是使用別的方法組 Store 的話，請記得要特別提醒 Jest。</p>
+
+<p>第二則是我們在每次的小測試之前 (<code class="language-plaintext highlighter-rouge">it()</code>) 都會重新載入一遍 Store 以免被前一次小測試的結果影響到。</p>
+
+<h2 id="總結">總結</h2>
+
+<p>其實使用 Jest 測試 Flux Store 會比測試 React 元件單純許多，我們不需要使用到 <a href="https://facebook.github.io/react/docs/test-utils.html">React Test Utilities</a>，也不需要特別為 jsx 建立一個 <code class="language-plaintext highlighter-rouge">preprocessor.js</code>。但是，當應用程式的規模越變越大，Store 之間互相有依賴性時，可能就會需要使用到一些進階技巧，例如：手動建立模擬函式 (Manual mocks)。這些都有在 Jest 官網上做介紹。未來有機會也會發相關文章與大家討論。</p>
+:ET

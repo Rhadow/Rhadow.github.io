@@ -1,0 +1,143 @@
+I"�><p>你想進入 FLAG 等級的大公司卻又覺得花時間刷題很沒意義嗎？ 以工程師的角度來看，那些題目裡會用到的演算法與資料結構在平時工作上基本不太會用到。有些人可能會覺得進了這些大公司後就會用到了吧？但很遺憾，裡面大部分的工作基本不會要求你實作這些演算法。大多都是使用已經寫好的函式庫就可以解決平日工作的需求，那為什麼這些大公司還要考這些刁難人的問題呢？這篇文章我們換個角度來看看刷題這件事。</p>
+
+<h2 id="換位思考">換位思考</h2>
+
+<p>試想一下如果你是這些大公司：工程師在你這做的東西可以被世界大部分的人使用，解決的問題與接觸到的資料量是外面所接觸不到的，你給的薪資與福利也很優渥。有這些條件，會吸引到多少人想加入。這時你需要從大量的面試者中選出好的軟體工程師，你會怎麼做？</p>
+
+<p>我們先來比較各種面試方法的好壞：</p>
+
+<h4 id="履歷審核與口頭提問">履歷審核與口頭提問</h4>
+
+<p>最簡單與直接的方法就是問面試者之前的經歷，做過什麼樣的專案，使用過什麼樣的語言及工具。但現在這個年代，每個人都很會嘴，沒有做過的，做不到的都可以講的口沫橫飛。口頭提問能看得出來的就是面試者的表達與溝通能力。這固然是個很重要的技能，但在軟體工程師的職位中，程式能力的比重佔得更大。有些人可能會想，去 Github 看看他之前參與的專案也可以驗證他說的話。但實際上，現在網路上有很多賣 Github 星星數，幫做專案讓你的 Github 看起來很完美的服務。網路上的資源大多都只能當參考而已。</p>
+
+<h4 id="出作業">出作業</h4>
+
+<p>另一種方法則是出特定的作業，例如做個簡單的網頁或後端 API 並在時間內交回。這方法比口頭提問更謹慎一些，但畢竟不是現場做，一樣無法確定是本人做的。如果作業的內容太大，還有另一個缺點就是需要花大量時間去審核。這方法能一定程度的濾掉一些程式能力不夠但又懶得找槍手的面試者。這也是為什麼大公司通常都會先有一輪電話面試或線上題目。</p>
+
+<h4 id="現場寫程式碼">現場寫程式碼</h4>
+
+<p>如果要確定是本人又要測試程式能力，那剩下的方法就是請面試者在現場寫程式。這時候寫什麼程式就很重要了，一個好的題目可以在有限的時間內測試除了程式能力以外的其他特質。例如合作能力，分析能力等。這也是這些困難程式面試題的由來。</p>
+
+<h2 id="實例">實例</h2>
+
+<p>接下來，我們來分析一個實際的面試題目來看看除了演算法與資料結構外，它還考察了面試者的哪些特質。先來看看問題：</p>
+
+<p><img src="https://rhadow.github.io/public/interview/example_map.png" alt="interview_example_map" /></p>
+
+<p>上面是一張地圖，S 代表著起點，線上的每個刻度代表一座城市。刻度上的數字代表該城市與起點的距離。另外，還有一個變數 <code class="language-plaintext highlighter-rouge">k</code>。請你寫出一個函式找出任兩個間距是 k 的城市。</p>
+
+<h4 id="分析">分析</h4>
+
+<p>看完問題後，相信你會發現與平常在刷題網站上看到的有些不同。題目並沒有提供確切的輸入與輸出也沒有給任何使用函式的範例。這時你可以問問面試官以下問題：</p>
+
+<ol>
+  <li>輸入是一串數字，先假設它會是用陣列 (array) 代表，圖中的例子可以表示成 <code class="language-plaintext highlighter-rouge">[4, 18, 27, 31, 50]</code>。輸入陣列最少和最多會有幾個數字？</li>
+  <li>輸出是一組城市，因為圖中城市沒有名字，可否用索引 (index) 來代替？例如 <code class="language-plaintext highlighter-rouge">[1,3]</code> 代表第二與四座城市。</li>
+  <li>如果找不到答案，輸出空陣列 <code class="language-plaintext highlighter-rouge">[]</code> 合理嗎？</li>
+  <li><code class="language-plaintext highlighter-rouge">k</code> 只限於正整數嗎？</li>
+</ol>
+
+<p>一般來說，只要你定義的輸入輸出合理，面試官都會答應照你說的來做。這時面試官可能也和你說輸入的長度是從 0 到很大的數字。到這裡，我們對問題有了更多的了解。例如問題的本質其實是在找一組陣列中相差為 <code class="language-plaintext highlighter-rouge">k</code> 的一組數字的索引。了解問題後別急著開始寫程式，先提出一些範例輸入輸出，盡量把所有特殊狀況都包括在內。這動作除了可以展現出你把特殊狀況都考慮進去了，也可以進一步確定你並沒有把題目理解錯誤。一些例子例如：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>輸入: cities = [4, 18, 27, 41, 50], k = 32
+輸出: [1, 4]
+
+輸入: cities = [4, 18, 27, 41, 50], k = 14
+輸出: [0, 1] 或 [2, 3]
+
+輸入: cities = [4, 18, 27, 41, 50], k = 7
+輸出: []
+
+輸入: cities = [4], k = 7
+輸出: []
+
+輸入: cities = [], k = 7
+輸出: []
+</code></pre></div></div>
+
+<p>在這個階段，面試官其實在考察你的下列特質：</p>
+
+<ol>
+  <li>能否在時間壓力下把問題簡化</li>
+  <li>是否可以有效的定義規格並使用合理的資料結構</li>
+  <li>是否可以考慮到輸入的各種狀況</li>
+  <li>和你合作起來的感覺如何</li>
+</ol>
+
+<h4 id="程式">程式</h4>
+
+<p>接下來要準備寫扣了。寫之前請先和面試官簡單述說你的邏輯。這麼做除了讓面試官瞭解你的思路之外，也可以變相的確認你的做法是否正確。如果思路不正確的話，一般面試官都會給你點小提示。</p>
+
+<p>寫扣時除了實作出正確的邏輯，最重要的是寫出易讀的程式。試想如果你是面試官，你會想要一個看不懂他在寫什麼的人當同事嗎？這邊需要注意的細節有：函式與變數的名稱要有意義，太複雜的邏輯就把它們抽象化到另一個小函式等。回到題目，最直接的作法就是遍歷每一個城市與城市之間的距離，用 javascript 來寫的話就是：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="kd">function</span> <span class="nx">getCityWithDistance</span><span class="p">(</span><span class="nx">cities</span><span class="p">,</span> <span class="nx">k</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">let</span> <span class="nx">result</span> <span class="o">=</span> <span class="p">[];</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kd">let</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">cities</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">for</span> <span class="p">(</span><span class="kd">let</span> <span class="nx">j</span> <span class="o">=</span> <span class="nx">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span> <span class="nx">j</span> <span class="o">&lt;</span> <span class="nx">cities</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+            <span class="kd">const</span> <span class="nx">distance</span> <span class="o">=</span> <span class="nx">cities</span><span class="p">[</span><span class="nx">j</span><span class="p">]</span> <span class="o">-</span> <span class="nx">cities</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nx">distance</span> <span class="o">===</span> <span class="nx">k</span><span class="p">)</span> <span class="p">{</span>
+                <span class="nx">result</span> <span class="o">=</span> <span class="p">[</span><span class="nx">i</span><span class="p">,</span> <span class="nx">j</span><span class="p">];</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="nx">result</span><span class="p">;</span>
+<span class="p">}</span>
+
+</code></pre></div></div>
+
+<p>接下來面試官會請你分析時間與空間複雜度。這兩種複雜度關係到程式跑的快慢與記憶體使用的多寡。上面的做法時間複雜度是 <code class="language-plaintext highlighter-rouge">O(N^2)</code>，空間複雜度是 <code class="language-plaintext highlighter-rouge">O(1)</code>。下一步就是會請面試者優化，使程式跑得更快或用更少的空間。這一點就很吃刷題的數量，你經驗過的題目越多，你對題目的最佳解直覺就越準。以這題來說，我們可以用空間來換時間把時間複雜度壓到 <code class="language-plaintext highlighter-rouge">O(N)</code>。</p>
+
+<p>做法是使用 HashMap 先把城市距離和索引存起來，例如：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span>
+    <span class="mi">4</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="mi">18</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="mi">27</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="mi">41</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+    <span class="mi">50</span><span class="p">:</span> <span class="mi">4</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>接下來在遍歷一次每個城市，並檢查該城市距離加上 <code class="language-plaintext highlighter-rouge">k</code> 後是否有城市存在。如果有就找到一組答案了。這樣做的好處是與其一組一組城市的比對距離，我們直接確認和目前城市差 <code class="language-plaintext highlighter-rouge">k</code> 距離的地點是否有城市。例如 <code class="language-plaintext highlighter-rouge">k = 14</code>，當遍歷到 <code class="language-plaintext highlighter-rouge">4</code> 時，我們檢查 <code class="language-plaintext highlighter-rouge">4 + 14</code> 是否存在在 HashMap 中。<code class="language-plaintext highlighter-rouge">18</code> 的確存在，因此我們找到一組 <code class="language-plaintext highlighter-rouge">[0, 1]</code> 的答案。如果你有在刷 Leetcode，你會發現這其實就是第一題 Two Sum 的變形題。用 javascript 實作：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">getCityWithDistance</span><span class="p">(</span><span class="nx">cities</span><span class="p">,</span> <span class="nx">k</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">distanceIndexMap</span> <span class="o">=</span> <span class="p">{};</span>
+    <span class="kd">let</span> <span class="nx">result</span> <span class="o">=</span> <span class="p">[];</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kd">let</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">cities</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">const</span> <span class="nx">distance</span> <span class="o">=</span> <span class="nx">cities</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
+        <span class="nx">distanceIndexMap</span><span class="p">[</span><span class="nx">distance</span><span class="p">]</span> <span class="o">=</span> <span class="nx">i</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kd">let</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">cities</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">const</span> <span class="nx">distance</span> <span class="o">=</span> <span class="nx">cities</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
+        <span class="kd">const</span> <span class="nx">targetDistance</span> <span class="o">=</span> <span class="nx">distance</span> <span class="o">+</span> <span class="nx">k</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">targetDistance</span> <span class="k">in</span> <span class="nx">distanceIndexMap</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">result</span> <span class="o">=</span> <span class="p">[</span><span class="nx">i</span><span class="p">,</span> <span class="nx">distanceIndexMap</span><span class="p">[</span><span class="nx">targetDistance</span><span class="p">]];</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="nx">result</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>在這個階段，面試官會考察下列特質：</p>
+
+<ol>
+  <li>會不會寫扣</li>
+  <li>對演算法與資料結構是否了解</li>
+  <li>產出程式的可維護性與可讀性</li>
+  <li>學習力 (Coachability) 高不高，能不能夠透過簡單的提示找到解題的正確方向</li>
+</ol>
+
+<h2 id="面試題目與刷題">面試題目與刷題</h2>
+
+<p>很多人認為這種面試題很沒意義，只要題刷得多就會過。實際上確實如此，但題目的本意並不是要逼你刷題。這些公司其實想要透過和你一起解決困難問題的過程中，觀察你在不同情況下的反應。真正的重點還是在於前一段列出的那些特質，所以你會發現新題目一直出現，原因就是避免大家背答案。</p>
+
+<p>當然這些題目還是有缺點，例如你需要知道一些你未來可能不會用到的演算法，或是鍛鍊 “最佳解直覺” 。但換個想法，多學習一些新事物又有什麼不好呢？</p>
+
+<p>在現在這個年代，你沒刷題的確就比其他面試者矮了一截。但你可以試著在刷題的過程中改變心態，不要只專注在把題目解出來，試著多加一些測試輸入把特殊情況考慮進去，寫扣時注意可讀性，把問題簡化並分類等。把刷題變成一種學習過程而不是在準備考試。</p>
+
+<h2 id="結語">結語</h2>
+
+<p>希望看完這篇文章的你能理解這些面試題目背後真正在考察面試者的哪些特質，刷題時除了把題目做出來外也想想如何能把這些特質展現給面試官。當然，好的軟體工程師不能只有程式能力很強，這也是為什麼通常大公司的面試通常還會至少有一輪 Behaviour Question (行為問題) 來測試面試者在各種狀況下的反應。面試前不要忘記回顧一些過去的專案經驗，在行為問題的面試中會很有幫助。最後希望各位都能得到夢想的工作！</p>
+
+:ET

@@ -1,0 +1,204 @@
+I"�j<p>單元測試在軟體開發過程中是一個很重要但常被忽略的環節。單元測試有著許多優點，例如，我們可以大幅度更動原本的程式碼並且不用擔心有哪邊被改壞了，因為只要單元測試都通過了，就代表著新更動過的程式是沒問題的。因此，如何寫出好的單元測試也是一門值得研究的課題。本篇將用一個簡單的例子分享如何使用 Facebook 的單元測試框架 <a href="https://facebook.github.io/jest/">Jest</a> 來測試 React 元件。</p>
+
+<h2 id="jest-是什麼">Jest 是什麼</h2>
+
+<p>Jest 是 Facebook 開發用來在 React 專案上做單元測試的框架。雖然說是 Facebook 開發的，但其實 Jest 是基於原本就很有名的 <a href="http://jasmine.github.io/">Jasmine</a> 測試框架所衍生出來的。因此，在 Jest 中其實可以看到許多 Jasmine 內的方法 (像是 <code class="language-plaintext highlighter-rouge">toBe()</code> <code class="language-plaintext highlighter-rouge">toEqual()</code> 等等)。你可能會問: 有這麼多的測試框架可以選擇，為什麼要選 Jest 呢? Jest 最大的特點在於它會在測試時自動模擬 (mock) 透過 <code class="language-plaintext highlighter-rouge">require()</code> 進來的模組，讓你專注在目前被測試的模組中。</p>
+
+<p>模擬化是指只做出該模組的空殼，裡面的實際邏輯都不存在。這在測試時特別有用，因為我們不希望其他的模組影響到我們目前測試中的模組。詳細請參考 <a href="https://facebook.github.io/jest/docs/common-js-testing.html#content">CommonJS Testing</a> 和 <a href="http://martinfowler.com/articles/mocksArentStubs.html">Mocks Aren’t Stubs</a>。</p>
+
+<h2 id="準備">準備</h2>
+
+<p>在測試開始前需要先做一些安裝與準備。第一步當然是透過 <code class="language-plaintext highlighter-rouge">npm install jest-cli</code> 來安裝 Jest。如果是使用 Windows 的開發者，你可能會碰到安裝上的問題，建議參考<a href="http://ryanlanciaux.github.io/blog/2014/08/02/using-jest-for-testing-react-components-on-windows/">國外提供的解法</a>，這裡就不多做說明。</p>
+
+<p>接下來請在專案的根目錄建立一個 <code class="language-plaintext highlighter-rouge">__tests__</code> 的資料夾用來放我們寫的單元測試檔案，Jest 在執行時會自動搜尋這個資料夾裡的檔案並一一執行測試。</p>
+
+<p>接著，一樣在根目錄新創一個叫 <code class="language-plaintext highlighter-rouge">preprocessor.js</code> 的檔案，內容為:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// preprocessor.js</span>
+<span class="kd">var</span> <span class="nx">ReactTools</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">react-tools</span><span class="dl">'</span><span class="p">);</span>
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="na">process</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">src</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">ReactTools</span><span class="p">.</span><span class="nx">transform</span><span class="p">(</span><span class="nx">src</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>這個檔案的主要功能是在測試時用來把 jsx 轉換成一般的 javascript。</p>
+
+<p>最後一步則是到 <code class="language-plaintext highlighter-rouge">package.json</code> 檔內做設定:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// package.json</span>
+<span class="p">{</span>
+    <span class="p">...</span>
+
+    <span class="dl">"</span><span class="s2">scripts</span><span class="dl">"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="dl">"</span><span class="s2">test</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">jest</span><span class="dl">"</span>
+    <span class="p">}</span>
+    <span class="dl">"</span><span class="s2">dependencies</span><span class="dl">"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="dl">"</span><span class="s2">react</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">*</span><span class="dl">"</span><span class="p">,</span>
+        <span class="dl">"</span><span class="s2">react-tools</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">*</span><span class="dl">"</span>
+    <span class="p">},</span>
+    <span class="dl">"</span><span class="s2">jest</span><span class="dl">"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="dl">"</span><span class="s2">scriptPreprocessor</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">&lt;rootDir&gt;/preprocessor.js</span><span class="dl">"</span><span class="p">,</span>
+        <span class="dl">"</span><span class="s2">unmockedModulePathPatterns</span><span class="dl">"</span><span class="p">:</span> <span class="p">[</span><span class="dl">"</span><span class="s2">react</span><span class="dl">"</span><span class="p">]</span>
+    <span class="p">}</span>
+
+    <span class="p">...</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>React 在最初設計時就被設計為不需要被模擬也能執行測試，因此我們使用 <code class="language-plaintext highlighter-rouge">unmockedModulePathPatterns</code> 來防止 React 在測試時被模擬化。
+以上設定完成後我們就可以使用 <code class="language-plaintext highlighter-rouge">npm test</code> 的指令開始測試。</p>
+
+<h2 id="被測試的元件">被測試的元件</h2>
+
+<p>以下是一個簡單的 React 元件，內容有兩個輸入框，一個是用來填名字，另一個用來填年齡。它還有一個確定按鈕，透過 Action 將使用者輸入的內容發送出去。在發送 Action 之前，會先檢查輸入框狀態，如果任何一個有留空的話則不會發送 Action。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="dl">'</span><span class="s1">use strict</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">var</span> <span class="nx">React</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">react</span><span class="dl">'</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">appActions</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">../actions/appActions.js</span><span class="dl">'</span><span class="p">);</span>
+
+<span class="kd">var</span> <span class="nx">Input</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">createClass</span><span class="p">({</span>
+
+    <span class="na">handleSubmit</span><span class="p">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">){</span>
+        <span class="nx">e</span><span class="p">.</span><span class="nx">preventDefault</span><span class="p">();</span>
+        <span class="kd">var</span> <span class="nx">newUser</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="na">name</span><span class="p">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">refs</span><span class="p">.</span><span class="nx">name</span><span class="p">.</span><span class="nx">getDOMNode</span><span class="p">().</span><span class="nx">value</span><span class="p">,</span>
+            <span class="na">age</span><span class="p">:</span> <span class="o">+</span><span class="k">this</span><span class="p">.</span><span class="nx">refs</span><span class="p">.</span><span class="nx">age</span><span class="p">.</span><span class="nx">getDOMNode</span><span class="p">().</span><span class="nx">value</span>
+        <span class="p">};</span>
+        <span class="k">if</span><span class="p">(</span><span class="nx">newUser</span><span class="p">.</span><span class="nx">name</span> <span class="o">&amp;&amp;</span> <span class="nx">newUser</span><span class="p">.</span><span class="nx">age</span><span class="p">){</span>
+            <span class="k">this</span><span class="p">.</span><span class="nx">refs</span><span class="p">.</span><span class="nx">name</span><span class="p">.</span><span class="nx">getDOMNode</span><span class="p">().</span><span class="nx">value</span> <span class="o">=</span> <span class="dl">''</span><span class="p">;</span>
+            <span class="k">this</span><span class="p">.</span><span class="nx">refs</span><span class="p">.</span><span class="nx">age</span><span class="p">.</span><span class="nx">getDOMNode</span><span class="p">().</span><span class="nx">value</span> <span class="o">=</span> <span class="dl">''</span><span class="p">;</span>
+            <span class="nx">appActions</span><span class="p">.</span><span class="nx">addUser</span><span class="p">(</span><span class="nx">newUser</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">},</span>
+
+    <span class="na">render</span><span class="p">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="cm">/* jshint ignore:start */</span>
+            <span class="o">&lt;</span><span class="nx">div</span><span class="o">&gt;</span>
+                <span class="o">&lt;</span><span class="nx">input</span> <span class="nx">type</span><span class="o">=</span><span class="dl">"</span><span class="s2">text</span><span class="dl">"</span> <span class="nx">placeholder</span><span class="o">=</span><span class="dl">"</span><span class="s2">Please enter your name</span><span class="dl">"</span> <span class="nx">ref</span><span class="o">=</span><span class="dl">"</span><span class="s2">name</span><span class="dl">"</span> <span class="o">/&gt;</span>
+                <span class="o">&lt;</span><span class="nx">input</span> <span class="nx">type</span><span class="o">=</span><span class="dl">"</span><span class="s2">text</span><span class="dl">"</span> <span class="nx">placeholder</span><span class="o">=</span><span class="dl">"</span><span class="s2">Please enter your age</span><span class="dl">"</span> <span class="nx">ref</span><span class="o">=</span><span class="dl">"</span><span class="s2">age</span><span class="dl">"</span> <span class="o">/&gt;</span>
+                <span class="o">&lt;</span><span class="nx">input</span> <span class="nx">type</span><span class="o">=</span><span class="dl">"</span><span class="s2">button</span><span class="dl">"</span> <span class="nx">value</span><span class="o">=</span><span class="dl">"</span><span class="s2">Add</span><span class="dl">"</span> <span class="nx">onClick</span><span class="o">=</span><span class="p">{</span><span class="k">this</span><span class="p">.</span><span class="nx">handleSubmit</span><span class="p">}</span> <span class="sr">/</span><span class="err">&gt;
+</span>            <span class="o">&lt;</span><span class="sr">/div</span><span class="err">&gt;
+</span>            <span class="cm">/* jshint ignore:end */</span>
+        <span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">});</span>
+
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="nx">Input</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h2 id="單元測試檔案">單元測試檔案</h2>
+
+<p>先來看看程式碼:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//__tests__/Input-test.js</span>
+
+<span class="dl">'</span><span class="s1">use strict</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="nx">jest</span><span class="p">.</span><span class="nx">dontMock</span><span class="p">(</span><span class="dl">'</span><span class="s1">../src/app/components/Input.js</span><span class="dl">'</span><span class="p">);</span>
+
+<span class="nx">describe</span><span class="p">(</span><span class="dl">'</span><span class="s1">Input Component</span><span class="dl">'</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">Input</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">../src/app/components/Input.js</span><span class="dl">'</span><span class="p">),</span>
+        <span class="nx">React</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">react/addons</span><span class="dl">'</span><span class="p">),</span>
+        <span class="nx">appActions</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">../src/app/actions/appActions.js</span><span class="dl">'</span><span class="p">),</span>
+        <span class="nx">TestUtils</span> <span class="o">=</span> <span class="nx">React</span><span class="p">.</span><span class="nx">addons</span><span class="p">.</span><span class="nx">TestUtils</span><span class="p">,</span>
+        <span class="nx">tree</span><span class="p">,</span>
+        <span class="nx">inputElements</span><span class="p">,</span>
+        <span class="nx">nameElement</span><span class="p">,</span>
+        <span class="nx">ageElement</span><span class="p">,</span>
+        <span class="nx">submitElement</span><span class="p">;</span>
+
+    <span class="nx">tree</span> <span class="o">=</span> <span class="nx">TestUtils</span><span class="p">.</span><span class="nx">renderIntoDocument</span><span class="p">(</span>
+        <span class="cm">/* jshint ignore:start */</span>
+        <span class="o">&lt;</span><span class="nx">Input</span> <span class="o">/&gt;</span>
+        <span class="cm">/* jshint ignore:end */</span>
+    <span class="p">);</span>
+
+    <span class="nx">inputElements</span> <span class="o">=</span> <span class="nx">TestUtils</span><span class="p">.</span><span class="nx">scryRenderedDOMComponentsWithTag</span><span class="p">(</span><span class="nx">tree</span><span class="p">,</span> <span class="dl">'</span><span class="s1">input</span><span class="dl">'</span><span class="p">);</span>
+    <span class="nx">nameElement</span> <span class="o">=</span> <span class="nx">inputElements</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+    <span class="nx">ageElement</span> <span class="o">=</span> <span class="nx">inputElements</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+    <span class="nx">submitElement</span> <span class="o">=</span> <span class="nx">inputElements</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+
+    <span class="nx">beforeEach</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">nameElement</span><span class="p">.</span><span class="nx">getDOMNode</span><span class="p">().</span><span class="nx">value</span> <span class="o">=</span> <span class="dl">''</span><span class="p">;</span>
+        <span class="nx">ageElement</span><span class="p">.</span><span class="nx">getDOMNode</span><span class="p">().</span><span class="nx">value</span> <span class="o">=</span> <span class="dl">''</span><span class="p">;</span>
+        <span class="nx">appActions</span><span class="p">.</span><span class="nx">addUser</span><span class="p">.</span><span class="nx">mockClear</span><span class="p">();</span>
+    <span class="p">});</span>
+
+    <span class="nx">it</span><span class="p">(</span><span class="dl">'</span><span class="s1">should keep user</span><span class="se">\'</span><span class="s1">s input if the input format is wrong</span><span class="dl">'</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">nameElement</span><span class="p">.</span><span class="nx">getDOMNode</span><span class="p">().</span><span class="nx">value</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Tester</span><span class="dl">'</span><span class="p">;</span>
+        <span class="nx">TestUtils</span><span class="p">.</span><span class="nx">Simulate</span><span class="p">.</span><span class="nx">click</span><span class="p">(</span><span class="nx">submitElement</span><span class="p">);</span>
+        <span class="nx">expect</span><span class="p">(</span><span class="nx">nameElement</span><span class="p">.</span><span class="nx">getDOMNode</span><span class="p">().</span><span class="nx">value</span><span class="p">).</span><span class="nx">toEqual</span><span class="p">(</span><span class="dl">'</span><span class="s1">Tester</span><span class="dl">'</span><span class="p">);</span>
+        <span class="nx">expect</span><span class="p">(</span><span class="nx">ageElement</span><span class="p">.</span><span class="nx">getDOMNode</span><span class="p">().</span><span class="nx">value</span><span class="p">).</span><span class="nx">toBeFalsy</span><span class="p">();</span>
+    <span class="p">});</span>
+
+    <span class="nx">it</span><span class="p">(</span><span class="dl">'</span><span class="s1">should clear user</span><span class="se">\'</span><span class="s1">s input if the input formats are correct</span><span class="dl">'</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">nameElement</span><span class="p">.</span><span class="nx">getDOMNode</span><span class="p">().</span><span class="nx">value</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Tester</span><span class="dl">'</span><span class="p">;</span>
+        <span class="nx">ageElement</span><span class="p">.</span><span class="nx">getDOMNode</span><span class="p">().</span><span class="nx">value</span> <span class="o">=</span> <span class="mi">27</span><span class="p">;</span>
+        <span class="nx">TestUtils</span><span class="p">.</span><span class="nx">Simulate</span><span class="p">.</span><span class="nx">click</span><span class="p">(</span><span class="nx">submitElement</span><span class="p">);</span>
+        <span class="nx">expect</span><span class="p">(</span><span class="nx">nameElement</span><span class="p">.</span><span class="nx">getDOMNode</span><span class="p">().</span><span class="nx">value</span><span class="p">).</span><span class="nx">toEqual</span><span class="p">(</span><span class="dl">''</span><span class="p">);</span>
+        <span class="nx">expect</span><span class="p">(</span><span class="nx">ageElement</span><span class="p">.</span><span class="nx">getDOMNode</span><span class="p">().</span><span class="nx">value</span><span class="p">).</span><span class="nx">toEqual</span><span class="p">(</span><span class="dl">''</span><span class="p">);</span>
+    <span class="p">});</span>
+
+    <span class="nx">it</span><span class="p">(</span><span class="dl">'</span><span class="s1">should send add user action with correct data when the inputs format are correct</span><span class="dl">'</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">nameElement</span><span class="p">.</span><span class="nx">getDOMNode</span><span class="p">().</span><span class="nx">value</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Tester</span><span class="dl">'</span><span class="p">;</span>
+        <span class="nx">ageElement</span><span class="p">.</span><span class="nx">getDOMNode</span><span class="p">().</span><span class="nx">value</span> <span class="o">=</span> <span class="mi">27</span><span class="p">;</span>
+        <span class="nx">TestUtils</span><span class="p">.</span><span class="nx">Simulate</span><span class="p">.</span><span class="nx">click</span><span class="p">(</span><span class="nx">submitElement</span><span class="p">);</span>
+        <span class="nx">expect</span><span class="p">(</span><span class="nx">appActions</span><span class="p">.</span><span class="nx">addUser</span><span class="p">).</span><span class="nx">toBeCalledWith</span><span class="p">({</span>
+            <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Tester</span><span class="dl">'</span><span class="p">,</span>
+            <span class="na">age</span><span class="p">:</span> <span class="mi">27</span>
+        <span class="p">});</span>
+    <span class="p">});</span>
+    
+    <span class="nx">it</span><span class="p">(</span><span class="dl">'</span><span class="s1">should not send add user action when the inputs format are wrong</span><span class="dl">'</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">nameElement</span><span class="p">.</span><span class="nx">getDOMNode</span><span class="p">().</span><span class="nx">value</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Tester</span><span class="dl">'</span><span class="p">;</span>
+        <span class="nx">ageElement</span><span class="p">.</span><span class="nx">getDOMNode</span><span class="p">().</span><span class="nx">value</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">wrong input</span><span class="dl">'</span><span class="p">;</span>
+        <span class="nx">TestUtils</span><span class="p">.</span><span class="nx">Simulate</span><span class="p">.</span><span class="nx">click</span><span class="p">(</span><span class="nx">submitElement</span><span class="p">);</span>
+        <span class="nx">expect</span><span class="p">(</span><span class="nx">appActions</span><span class="p">.</span><span class="nx">addUser</span><span class="p">).</span><span class="nx">not</span><span class="p">.</span><span class="nx">toBeCalled</span><span class="p">();</span>
+    <span class="p">});</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<p>第一行非常重要: <code class="language-plaintext highlighter-rouge">jest.dontMock('../src/app/components/Input.js');</code></p>
+
+<p>Jest 預設在 <code class="language-plaintext highlighter-rouge">require()</code> 時會自動模擬 (mock) 化進來的模組，因此這行我們告訴 Jest 當 <code class="language-plaintext highlighter-rouge">require('../src/app/components/Input.js')</code> 時，不要模擬 (don’t mock) 化此模組，我們需要正常版的 Input 元件來做測試。</p>
+
+<p>程式碼內出現的 <code class="language-plaintext highlighter-rouge">describe()</code>，<code class="language-plaintext highlighter-rouge">it()</code>，<code class="language-plaintext highlighter-rouge">expect()</code> 是 jasmine 內原來就有的方法。主要是讓我們的測試程式讀起來就像是一般英文的句子。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">describe</span><span class="p">(</span><span class="dl">'</span><span class="s1">sum</span><span class="dl">'</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">it</span><span class="p">(</span><span class="dl">'</span><span class="s1">adds 1 + 2 to equal 3</span><span class="dl">'</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+       <span class="kd">var</span> <span class="nx">sum</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">../sum</span><span class="dl">'</span><span class="p">);</span>
+       <span class="nx">expect</span><span class="p">(</span><span class="nx">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)).</span><span class="nx">toBe</span><span class="p">(</span><span class="mi">3</span><span class="p">);</span>
+    <span class="p">});</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<p>我們可以把以上程式碼翻成這樣的中文:</p>
+
+<blockquote>
+  <p>這段程式碼將描述 (describe) “sum” 這個方法，它 (it) 將 “一和二相加並輸出三”。
+預計(expect) 執行 sum(1,2) 後得到的結果會是 3。</p>
+</blockquote>
+
+<p><code class="language-plaintext highlighter-rouge">beforeEach()</code> 也是一個 Jasmine 原有的方法。
+使用方式是丟一個函式進去，作用是之後每次做小測試 (<code class="language-plaintext highlighter-rouge">it(...)</code>) 之前都會執行一次我們丟進去的函式。
+在範例中，我們拿來清空輸入框與清空模擬化過的 action 紀錄。</p>
+
+<p>React 有提供一系列的<a href="https://facebook.github.io/react/docs/test-utils.html">測試工具</a>，我們會用它們來模擬一些事件，像是 click, change, keydown 之類的。</p>
+
+<p>由於在測試時，元件並沒有實際 render 到 DOM 上，我們必須透過 <code class="language-plaintext highlighter-rouge">renderIntoDocument</code> 來將元件 render 到一個虛擬的 DOM 上。</p>
+
+<p><code class="language-plaintext highlighter-rouge">scryRenderedDOMComponentsWithTag</code> 則是讓我們能夠到上述的虛擬 DOM 中找出特定 HTML 元素並存在一個陣列中。在這個例子，我們找出了 Input 元件中所有的 input 元素。</p>
+
+<p>在每個小測試 (<code class="language-plaintext highlighter-rouge">it(...)</code>) 中，我們也使用了 <code class="language-plaintext highlighter-rouge">Simulate</code> 這個方法來對送出按鈕模擬點擊事件。</p>
+
+<p>建議各位可以邊寫邊看 Jasmine 與 React TestUtils 的各種方法，這樣在寫測試時能夠寫出更靈活更有彈性的測試。</p>
+
+<h2 id="總結">總結</h2>
+
+<p>雖然使用 Jest 對 React 做測試非常方便，但它也沒有像官網所說的”無痛做測試”那樣的無痛。
+除了在 windows 上安裝困難重重外，Jest 目前只支援到 NodeJS 0.10 版。最新的 0.12 版與 io.js 都是會報錯的。除了一些缺點之外，Jest 的確為我們省去了不少寫測試時的麻煩。同時，Facebook 也是 Jest 與 React 的背後推手，相信 Jest 對 React 的相容性應該不會輸給其他的測試框架。</p>
+:ET

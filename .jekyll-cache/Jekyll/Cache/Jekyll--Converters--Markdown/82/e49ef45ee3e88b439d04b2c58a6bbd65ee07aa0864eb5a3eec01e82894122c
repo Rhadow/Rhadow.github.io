@@ -1,0 +1,189 @@
+I"�<p>Superposition is one of the special properties of quantum computer that makes it powerful. I think of it as having different potential states of qubits happening at the same time which allows calculations of different states in one go. This is what makes quantum computer much faster than classical computer.</p>
+
+<p>In this section, we will be challenged to manipulate qubits in superposition into various qubit states.</p>
+
+<h3 id="task-1-plus-state">Task 1. Plus state</h3>
+
+<blockquote>
+  <p>Input: a qubit in \(\left| 0 \right&gt;\) state</p>
+
+  <p>Goal: create a \(\left|+\right&gt;\) state on this qubit (\(\left|+\right&gt; = \frac{\left| 0 \right&gt; + \left| 1 \right&gt;}{\sqrt{2}}\))</p>
+</blockquote>
+
+<p>We already seen the same question in <a href="https://rhadow.github.io/2019/06/27/quantum-kata-basic-gates/">last section</a>. This can be achieved by Hadamard gate.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>operation PlusState (qs : Qubit[]) : Unit {
+    H(qs[0]);
+}
+</code></pre></div></div>
+
+<h3 id="task-2-minus-state">Task 2. Minus state</h3>
+
+<blockquote>
+  <p>Input: a qubit in \(\left| 0 \right&gt;\) state</p>
+
+  <p>Goal: create a \(\left|-\right&gt;\) state on this qubit (\(\left|-\right&gt; = \frac{\left| 0 \right&gt; - \left| 1 \right&gt;}{\sqrt{2}}\))</p>
+</blockquote>
+
+<p>This can be either achieved by first apply X gate then Hadamard gate or first apply Hadamard gate then Z gate.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>operation MinusState (qs : Qubit[]) : Unit {
+    X(qs[0]);
+    H(qs[0]);
+}
+</code></pre></div></div>
+
+<h3 id="task-3-unequal-superposition">Task 3*. Unequal superposition</h3>
+
+<blockquote>
+  <p>Input: a qubit in \(\left| 0 \right&gt;\) state and angle \(\alpha\)</p>
+
+  <p>Goal: create a \(cos(\alpha)\left| 0 \right&gt; + sin(\alpha)\left| 1 \right&gt;\) state on this qubit.</p>
+</blockquote>
+
+<p>This kata is a duplicate of Kata 1.4 in <a href="https://rhadow.github.io/2019/06/27/quantum-kata-basic-gates/">last section</a>.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>operation UnequalSuperposition (qs : Qubit[], alpha : Double) : Unit {
+    Ry(2.0 * alpha, qs[0]);
+}
+</code></pre></div></div>
+
+<h3 id="task-4-superposition-of-all-basis-vectors-on-two-qubits">Task 4. Superposition of all basis vectors on two qubits</h3>
+
+<blockquote>
+  <p>Input: two qubits in \(\left| 00 \right&gt;\) state</p>
+
+  <p>Goal: create the following state on these qubits: \(\frac{\left| 00 \right&gt; + \left| 01 \right&gt; + \left| 10 \right&gt; + \left| 11 \right&gt;}{\sqrt{2}}\)</p>
+</blockquote>
+
+<p>To create all basis vectors, we apply hadamard gate on each \(\left| 0 \right&gt;\) qubit. This technique is not only limited to two qubits, it is applicable for n qubits. The general equation is:</p>
+
+<p><img src="https://rhadow.github.io/public/quantum_kata/hadamard_general.png" alt="Hadamard general equation" /></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>operation AllBasisVectors_TwoQubits (qs : Qubit[]) : Unit {
+    H(qs[0]);
+    H(qs[1]);
+}
+</code></pre></div></div>
+
+<h3 id="task-5-superposition-of-basis-vectors-with-phases">Task 5. Superposition of basis vectors with phases</h3>
+
+<blockquote>
+  <p>Input: two qubits in \(\left| 00 \right&gt;\) state</p>
+
+  <p>Goal: create the following state on these qubits: \(\frac{\left| 00 \right&gt; + i\left| 01 \right&gt; - \left| 10 \right&gt; - i\left| 11 \right&gt;}{2}\)</p>
+</blockquote>
+
+<p>As this kata hinted, it will be easier if we separate two qubits and work on each qubit. A general qubit equation is \(a\left| 0 \right&gt; + b\left| 1 \right&gt;\). We first have two general qubits and solve the amplitude (a, b, c, d) as follows.</p>
+
+\[(a\left| 0 \right&gt; + b\left| 1 \right&gt;)\otimes(c\left| 0 \right&gt; + d\left| 1 \right&gt;) =\]
+
+\[ac\left| 00 \right&gt; + ad\left| 01 \right&gt; + bc\left| 10 \right&gt; + bd\left| 11 \right&gt; =\]
+
+\[\frac{\left| 00 \right&gt; + i\left| 01 \right&gt; - \left| 10 \right&gt; - i\left| 11 \right&gt;}{2}\]
+
+<p>Here we can see that:</p>
+
+\[ac = \frac{1}{2}\]
+
+\[ad = \frac{i}{2}\]
+
+\[bc = \frac{-1}{2}\]
+
+\[bd = \frac{-i}{2}\]
+
+<p>Solve for a, b, c and d we will get:</p>
+
+\[a = \frac{1}{\sqrt{2}}\]
+
+\[b = \frac{-1}{\sqrt{2}}\]
+
+\[c = \frac{1}{\sqrt{2}}\]
+
+\[d = \frac{i}{\sqrt{2}}\]
+
+<p>Which means to create the goal state, we need these two qubits:</p>
+
+\[\frac{\left| 0 \right&gt; - \left| 1 \right&gt;}{\sqrt{2}}\]
+
+\[\frac{\left| 0 \right&gt; + i\left| 1 \right&gt;}{\sqrt{2}}\]
+
+<p>Now this kata can be reduced to transform one \(\left| 0 \right&gt;\) to \(\frac{\left| 0 \right&gt; - \left| 1 \right&gt;}{\sqrt{2}}\) and another \(\left| 0 \right&gt;\) to \(\frac{\left| 0 \right&gt; + i\left| 1 \right&gt;}{\sqrt{2}}\).</p>
+
+<p>Let’s look at the first one, it can be achieved by first applying Hadamard gate then Z gate. For the second one, a Hadamard gate then S gate will give us the correct state. All we left to do is translate them to code:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>operation AllBasisVectorsWithPhases_TwoQubits (qs : Qubit[]) : Unit {
+    H(qs[0]);
+    Z(qs[0]);
+    H(qs[1]);
+    S(qs[1]);
+}
+</code></pre></div></div>
+
+<h3 id="task-6-bell-state">Task 6. Bell state</h3>
+
+<blockquote>
+  <p>Input: two qubits in \(\left| 00 \right&gt;\) state</p>
+
+  <p>Goal: create a Bell state \(|Φ⁺⟩ = \frac{\left| 00 \right&gt; + \left| 11 \right&gt;}{\sqrt{2}}\)</p>
+</blockquote>
+
+<p>There is detailed instructions on how to create this bell state in <a href="https://www.quantum-quest.nl/quantumquest.pdf">Quantum Quest 2.2.5</a>. Only Hadamard gate and CNOT gate is needed.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>operation BellState (qs : Qubit[]) : Unit {
+    H(qs[0]);
+    CNOT(qs[0], qs[1]);
+}
+</code></pre></div></div>
+
+<h3 id="task-7-bell-state">Task 7. Bell state</h3>
+
+<blockquote>
+  <p>Inputs: two qubits in \(\left| 00 \right&gt;\) state and an Integer index</p>
+
+  <p>Goal: create one of the Bell states based on the value of index:</p>
+
+  <p>0: \(|Φ⁺⟩ = \frac{\left| 00 \right&gt; + \left| 11 \right&gt;}{\sqrt{2}}\)</p>
+
+  <p>1: \(|Φ⁻⟩ = \frac{\left| 00 \right&gt; - \left| 11 \right&gt;}{\sqrt{2}}\)</p>
+
+  <p>2: \(|Ψ⁺⟩ = \frac{\left| 01 \right&gt; + \left| 10 \right&gt;}{\sqrt{2}}\)</p>
+
+  <p>3: \(|Ψ⁻⟩ = \frac{\left| 01 \right&gt; - \left| 10 \right&gt;}{\sqrt{2}}\)</p>
+</blockquote>
+
+<p>Again, another duplicate kata from <a href="https://rhadow.github.io/2019/06/27/quantum-kata-basic-gates/">last section</a>. There are two ways of creating Bell states, we can either transform the \(\left| 00 \right&gt;\) to \(|Φ⁺⟩\) first and then convert it to the rest of states or change the state to \(\left| 01 \right&gt;\), \(\left| 10 \right&gt;\), \(\left| 11 \right&gt;\) then do the Bell transform.</p>
+
+\[left\|Φ⁺\right&gt; = BellTransform(\frac{\left\| 00 \right&gt;)
+left\|Φ⁻\right&gt; = BellTransform(\frac{\left\| 10 \right&gt;)
+left\|Ψ⁺\right&gt; = BellTransform(\frac{\left\| 01 \right&gt;)
+left\|Ψ⁻\right&gt; = BellTransform(\frac{\left\| 11 \right&gt;)\]
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>operation AllBellStates (qs : Qubit[], index : Int) : Unit {
+    // Bell Transform first
+    H(qs[0]);
+    CNOT(qs[0], qs[1]);
+    if (index == 1) {
+        Z(qs[0]);
+    } elif (index == 2) {
+        X(qs[0]);
+    } elif (index == 3) {
+        X(qs[0]);
+        Z(qs[0]);
+    }
+
+    // Bell Transform last
+    // if (index == 1) {
+    //     X(qs[0]);
+    // } elif (index == 2) {
+    //     X(qs[1]);
+    // } elif (index == 3) {
+    //     X(qs[0]);
+    //     X(qs[1]);
+    // }
+    // H(qs[0]);
+    // CNOT(qs[0], qs[1]);
+
+}
+</code></pre></div></div>
+:ET

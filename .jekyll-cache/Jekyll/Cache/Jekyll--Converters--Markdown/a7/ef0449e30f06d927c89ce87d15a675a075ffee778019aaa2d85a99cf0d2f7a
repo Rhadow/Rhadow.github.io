@@ -1,0 +1,202 @@
+I"�N<p><a href="https://github.com/webpack/webpack">Webpack</a> 是一個非常好用的打包工具，如果只是想單純地使用基本功能的話，它非常的好理解。
+相信有看過教學的人都對以下這段基本設定相當熟悉：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// webpack.config.js</span>
+
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="na">entry</span><span class="p">:</span> <span class="dl">"</span><span class="s2">./entry.js</span><span class="dl">"</span><span class="p">,</span>
+    <span class="na">output</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">path</span><span class="p">:</span> <span class="nx">__dirname</span><span class="p">,</span>
+        <span class="na">filename</span><span class="p">:</span> <span class="dl">"</span><span class="s2">bundle.js</span><span class="dl">"</span>
+    <span class="p">},</span>
+    <span class="na">module</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">loaders</span><span class="p">:</span> <span class="p">[</span>
+            <span class="p">{</span> <span class="na">test</span><span class="p">:</span> <span class="sr">/</span><span class="se">\.</span><span class="sr">css$/</span><span class="p">,</span> <span class="na">loader</span><span class="p">:</span> <span class="dl">"</span><span class="s2">style!css</span><span class="dl">"</span> <span class="p">}</span>
+        <span class="p">]</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>但現實總是與理想不同，一旦你開始想使用一些進階功能時，就會開始遇到各式各樣的 Plugins。由於在網路上除了官網的介紹之外，很少找到有把 Plugins 統整起來並介紹的文章，因此，本篇將針對常用到的 Plugins 做簡易的介紹。</p>
+
+<h2 id="hot-module-replacement-plugin">Hot Module Replacement Plugin</h2>
+
+<p>一般來說，Hot Module Replacement Plugin 通常會搭配 <a href="http://webpack.github.io/docs/webpack-dev-server.html">Webpack dev server</a> 一起使用。 它提供類似於 Live Reload 的功能，一旦你的程式碼有做更動，此 Plugin 會直接更新畫面並做出相對應的變化。</p>
+
+<p>通常會使用到 Hot Module Replacement Plugin 的時機是當 webpack dev server 不是透過 inline mode 做啟動時。</p>
+
+<p>webpack-dev-server 有兩種啟動模式：</p>
+
+<p>第一種是教學中常見到的：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>webpack-dev-server <span class="nt">--devtool</span> <span class="nb">eval</span> <span class="nt">--progress</span> <span class="nt">--colors</span> <span class="nt">--hot</span> <span class="nt">--content-base</span> build
+</code></pre></div></div>
+
+<p>這就是所謂的 inline mode，指令中的 <code class="language-plaintext highlighter-rouge">--hot</code> 會自動將 Hot Module Replacement Plugin 的功能加入，因此，我們不用特地到 <code class="language-plaintext highlighter-rouge">webpack.config.js</code> 內做設定。</p>
+
+<p>另一種啟動 webpack dev server 的方式則是透過程式：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">webpack</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">webpack</span><span class="dl">'</span><span class="p">),</span>
+    <span class="nx">WebpackDevServer</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">webpack-dev-server</span><span class="dl">'</span><span class="p">),</span>
+    <span class="nx">webpackConfig</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">../webpack.config.js</span><span class="dl">'</span><span class="p">);</span>
+
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">compiler</span> <span class="o">=</span> <span class="nx">webpack</span><span class="p">(</span><span class="nx">webpackConfig</span><span class="p">);</span>
+
+    <span class="kd">var</span> <span class="nx">bundler</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">WebpackDevServer</span><span class="p">(</span><span class="nx">compiler</span><span class="p">,</span> <span class="p">{</span>
+        <span class="na">publicPath</span><span class="p">:</span> <span class="dl">'</span><span class="s1">/build/</span><span class="dl">'</span><span class="p">,</span>
+        <span class="na">hot</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+        <span class="na">quiet</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+        <span class="na">noInfo</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+        <span class="na">stats</span><span class="p">:</span> <span class="p">{</span>
+            <span class="na">colors</span><span class="p">:</span> <span class="kc">true</span>
+        <span class="p">}</span>
+    <span class="p">});</span>
+
+    <span class="nx">bundler</span><span class="p">.</span><span class="nx">listen</span><span class="p">(</span><span class="mi">8080</span><span class="p">,</span> <span class="dl">'</span><span class="s1">localhost</span><span class="dl">'</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">Webpack-dev-server is live on port 8080</span><span class="dl">'</span><span class="p">);</span>
+    <span class="p">});</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>當使用這種方式啟動 webpack dev server 時，我們就必須記得到 <code class="language-plaintext highlighter-rouge">webpack.config.js</code> 內加入 Hot Module Replacement Plugin 的設定，如下：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//webpack.config.js</span>
+
+<span class="c1">//...other webpack settings</span>
+
+<span class="nx">plugins</span><span class="p">:</span> <span class="p">[</span>
+    <span class="k">new</span> <span class="nx">Webpack</span><span class="p">.</span><span class="nx">HotModuleReplacementPlugin</span><span class="p">()</span>
+<span class="p">]</span>
+</code></pre></div></div>
+
+<h2 id="commons-chunk-plugin">Commons Chunk Plugin</h2>
+
+<p>Commons Chunk Plugin 的用法複雜且多樣，本文只針對基本用法做介紹。</p>
+
+<p>此 Plugin 其中之一的用途是在於分離第三方套件與專案內部程式碼。由於專案內部程式碼會不斷做更新，而第三方套件一般來說修改的頻率較低，如果沒有與第三方套件分開打包的話，使用者在每一次更新後都必須下載第三方套件加上專案內部程式碼的一整包檔案，使專案運行起來的速度變慢，並降低使用者體驗。</p>
+
+<p>此 Plugin 使用方式如下：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">path</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">path</span><span class="dl">'</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">webpack</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">webpack</span><span class="dl">'</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">node_modules_dir</span> <span class="o">=</span> <span class="nx">path</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">__dirname</span><span class="p">,</span> <span class="dl">'</span><span class="s1">node_modules</span><span class="dl">'</span><span class="p">);</span>
+
+<span class="kd">var</span> <span class="nx">config</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">entry</span><span class="p">:</span> <span class="p">{</span>
+    <span class="na">app</span><span class="p">:</span> <span class="nx">path</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">__dirname</span><span class="p">,</span> <span class="dl">'</span><span class="s1">app/main.js</span><span class="dl">'</span><span class="p">),</span>
+    <span class="na">vendors</span><span class="p">:</span> <span class="p">[</span><span class="dl">'</span><span class="s1">react</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">jquery</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">bootstrap</span><span class="dl">'</span><span class="p">]</span>
+  <span class="p">},</span>
+  <span class="na">output</span><span class="p">:</span> <span class="p">{</span>
+    <span class="na">path</span><span class="p">:</span> <span class="nx">path</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">__dirname</span><span class="p">,</span> <span class="dl">'</span><span class="s1">dist</span><span class="dl">'</span><span class="p">),</span>
+    <span class="na">filename</span><span class="p">:</span> <span class="dl">'</span><span class="s1">app.js</span><span class="dl">'</span>
+  <span class="p">},</span>
+  <span class="na">module</span><span class="p">:</span> <span class="p">{</span>
+    <span class="na">loaders</span><span class="p">:</span> <span class="p">[{</span>
+      <span class="na">test</span><span class="p">:</span> <span class="sr">/</span><span class="se">\.</span><span class="sr">js$/</span><span class="p">,</span>
+      <span class="na">exclude</span><span class="p">:</span> <span class="p">[</span><span class="nx">node_modules_dir</span><span class="p">],</span>
+      <span class="na">loader</span><span class="p">:</span> <span class="dl">'</span><span class="s1">babel</span><span class="dl">'</span>
+    <span class="p">}]</span>
+  <span class="p">},</span>
+  <span class="na">plugins</span><span class="p">:</span> <span class="p">[</span>
+    <span class="c1">// 第一個參數對應到 entry 內的屬性名</span>
+    <span class="c1">// 第二個參數是輸出檔案的名稱</span>
+    <span class="k">new</span> <span class="nx">webpack</span><span class="p">.</span><span class="nx">optimize</span><span class="p">.</span><span class="nx">CommonsChunkPlugin</span><span class="p">(</span><span class="dl">'</span><span class="s1">vendors</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">vendors.js</span><span class="dl">'</span><span class="p">)</span>
+  <span class="p">]</span>
+<span class="p">};</span>
+
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="nx">config</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>以上設定會打包成 <code class="language-plaintext highlighter-rouge">app.js</code> 與 <code class="language-plaintext highlighter-rouge">vendors.js</code> 兩個檔案。</p>
+
+<h2 id="provide-plugin">Provide Plugin</h2>
+
+<p>你有遇到將 jquery 和 bootstrap 打包到 vendors 卻出現 <code class="language-plaintext highlighter-rouge">Uncaught ReferenceError: jQuery is not defined</code> 的問題嗎？ Provide Plugin 會是解決這個問題的一種辦法。</p>
+
+<p>我們先來看看解法再來探討它的用處：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//webpack.config.js</span>
+
+<span class="c1">//...other webpack settings</span>
+
+<span class="nx">plugins</span><span class="p">:</span> <span class="p">[</span>
+    <span class="k">new</span> <span class="nx">Webpack</span><span class="p">.</span><span class="nx">ProvidePlugin</span><span class="p">({</span>
+        <span class="na">$</span><span class="p">:</span> <span class="dl">'</span><span class="s1">jquery</span><span class="dl">'</span><span class="p">,</span>
+        <span class="na">jQuery</span><span class="p">:</span> <span class="dl">'</span><span class="s1">jquery</span><span class="dl">'</span><span class="p">,</span>
+        <span class="dl">'</span><span class="s1">window.jQuery</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">jquery</span><span class="dl">'</span><span class="p">,</span>
+        <span class="dl">'</span><span class="s1">root.jQuery</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">jquery</span><span class="dl">'</span>
+    <span class="p">}),</span>
+<span class="p">]</span>
+</code></pre></div></div>
+
+<p>Provide Plugin 的主要功能是當在程式中遇到特定字元且沒被定義時會自動載入特定模組。上例的設定是在碰到 <code class="language-plaintext highlighter-rouge">$</code>，<code class="language-plaintext highlighter-rouge">jQuery</code>，<code class="language-plaintext highlighter-rouge">window.jQuery</code> 或 <code class="language-plaintext highlighter-rouge">root.jQuery</code> 時都載入 jquery 套件。所以，當在某檔案中不定義 <code class="language-plaintext highlighter-rouge">$</code> 直接使用 <code class="language-plaintext highlighter-rouge">$("#item")</code> 時，程式不會報錯。</p>
+
+<p>而本段落初所碰到的問題正是在 bootstrap 中有使用 jquery 卻沒定義的情況，因此只要做了以上設定，bootstrap 就能正常引用 jquery 的功能了。</p>
+
+<h2 id="no-errors-plugin">No Errors Plugin</h2>
+
+<p>此 Plugin 主要功能是在程式碼出錯時，不會將有錯誤的程式碼打包以確保打包完後的程式碼語法上的正確性。比較容易會碰到的問題是，當有使用 <a href="https://github.com/MoOx/eslint-loader">eslint-loader</a> 來為 ES6 做語法檢查時，不管是 warning 或是 error 都會使 No Error Plugin 停止打包。</p>
+
+<p>同時使用此 Plugin 與 eslint-loader 的設定有好有壞，好處是你的程式碼必須乾淨到連 warning 都沒有才能正常打包。壞處則是檢查太嚴格，有些開發者可能不習慣這樣的模式。當你想要保有檢查 es6 語法功能卻又不想被這麼嚴苛的對待時，就把 No Errors Plugin 拿掉吧。</p>
+
+<h2 id="extract-text-plugin">Extract Text Plugin</h2>
+
+<p>大家都知道在 webpack 中 CSS 是可以被 <code class="language-plaintext highlighter-rouge">require()</code> 的，webpack 會自動生成一個 <code class="language-plaintext highlighter-rouge">&lt;style&gt;</code> 標籤並加入到 html 的 <code class="language-plaintext highlighter-rouge">&lt;head&gt;</code> 中。但是在發佈時，我們可能只希望有一個被打包過後的 css 檔。這時 Extract Text Plugin 就能幫助我們完成這項任務。</p>
+
+<p>基本使用的方式很簡單，只需要給 Plugin 一個最後輸出完的檔名即可：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//webpack.config.js</span>
+
+<span class="c1">//...other webpack settings</span>
+
+<span class="nx">plugins</span><span class="p">:</span> <span class="p">[</span>
+    <span class="k">new</span> <span class="nx">ExtractTextPlugin</span><span class="p">(</span><span class="dl">'</span><span class="s1">app.bundle.css</span><span class="dl">'</span><span class="p">)</span>
+<span class="p">]</span>
+</code></pre></div></div>
+
+<p>以上設定會輸出一個 <code class="language-plaintext highlighter-rouge">app.bundle.css</code> 的檔案。</p>
+
+<h2 id="uglifyjsplugin">UglifyJsPlugin</h2>
+
+<p>UglifyJsPlugin 的功能正如其名，它會壓縮 javascript 檔。在 <code class="language-plaintext highlighter-rouge">webpack -p</code> 也就是 production mode 時會自動執行。這邊特別提出來的原因在於有時會在壓縮時有一些多餘的警告 <code class="language-plaintext highlighter-rouge">(Side effects in initialization of unused variable define)</code> 跑出來，如果你也像我一樣龜毛不喜歡看到警告的話，你可以在 <code class="language-plaintext highlighter-rouge">webpack.config.js</code> 內做以下設定：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//webpack.config.js</span>
+
+<span class="c1">//...other webpack settings</span>
+
+<span class="nx">plugins</span><span class="p">:</span> <span class="p">[</span>
+    <span class="k">new</span> <span class="nx">Webpack</span><span class="p">.</span><span class="nx">optimize</span><span class="p">.</span><span class="nx">UglifyJsPlugin</span><span class="p">({</span>
+        <span class="na">compress</span><span class="p">:</span> <span class="p">{</span>
+            <span class="na">warnings</span><span class="p">:</span> <span class="kc">false</span>
+        <span class="p">}</span>
+    <span class="p">})</span>
+<span class="p">]</span>
+</code></pre></div></div>
+
+<p>上述程式碼只是把壓縮時的警告關上而已。</p>
+
+<h2 id="htmlwebpackplugin">HtmlWebpackPlugin</h2>
+
+<p>最後與各位分享的是一個非官方的 Plugin。<a href="https://github.com/ampedandwired/html-webpack-plugin">html-webpack-plugin</a> 能夠動態產生 <code class="language-plaintext highlighter-rouge">index.html</code> 並支援 Extract Text Plugin 自動將打包完後的 js 與 css 檔加入。</p>
+
+<p>基本使用方法如下：</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//webpack.config.js</span>
+
+<span class="c1">//...other webpack settings</span>
+
+<span class="nx">plugins</span><span class="p">:</span> <span class="p">[</span>
+    <span class="k">new</span> <span class="nx">HtmlWebpackPlugin</span><span class="p">()</span>
+<span class="p">]</span>
+</code></pre></div></div>
+
+<p>以上設定會自動生成一個基本的 <code class="language-plaintext highlighter-rouge">index.html</code> 並將打包過後的 js 和 css 檔透過 <code class="language-plaintext highlighter-rouge">&lt;script&gt;</code> 和 <code class="language-plaintext highlighter-rouge">&lt;link&gt;</code> 加入。
+它也提供開發者自訂 template 方法，使用的引擎是 <a href="https://github.com/blueimp/JavaScript-Templates">blueimp</a>，詳細設定請參考它的官方 Github。</p>
+
+<p>那麼在什麼時候我們會需要動態組 <code class="language-plaintext highlighter-rouge">index.html</code> 呢？當你想要在 js 或 css 檔後面加上版本號時 (例如: app.bundle.0.0.1.js)，自動組成的 HTML 檔就會派上用場了，你不必在每次更新都要去改動 <code class="language-plaintext highlighter-rouge">index.html</code> 內的檔名。</p>
+
+<h2 id="總結">總結</h2>
+
+<p>呼～寫了這麼長一篇的 Webpack Plugins 介紹，希望花時間看完的你有一些收穫。但這些也都只是 Webpack 冰山一角而已，除了 plugins 之外，還有各式各樣的 loaders 等著我們去使用。前端工程師真的是無時無刻都要學習啊。如果對以上介紹有問題或指正的地方，歡迎留言指教。需要看完整程式碼的讀者可以到 <a href="https://github.com/Rhadow/react-webpack-boilerplate">React-Webpack-Boilerplate</a> 參觀。</p>
+:ET

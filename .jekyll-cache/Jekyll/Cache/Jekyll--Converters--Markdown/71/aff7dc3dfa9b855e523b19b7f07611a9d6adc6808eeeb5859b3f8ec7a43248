@@ -1,0 +1,302 @@
+I"<<h2 id="前言">前言</h2>
+
+<p>由於最近在工作上越來越常用到各式各樣不同的 Unix 指令，只瞭解一些基本的 <code class="language-plaintext highlighter-rouge">ls</code>, <code class="language-plaintext highlighter-rouge">cd</code> 等等已經不太夠用了，再加上之前看一些套件安裝文件或在 <a href="http://stackoverflow.com/">Stack Overflow</a> 上看到某些問題解法時也不是很懂那些指令在做什麼。於是最近決定好好把 Unix 學一學並在這系列文章中將一些常用的指令與使用心得跟各位分享。</p>
+
+<p>既然這是第一篇，我們還是從最基本的指令開始吧。由於 Unix 指令實在有太多的選項，本篇不會將他們一一列出來，只會針對幾個比較常用到的做說明。如有特殊需求要用到別的選項時，還是請各位自行到網路上或使用 <code class="language-plaintext highlighter-rouge">man</code> 指令做查詢。</p>
+
+<blockquote>
+  <p>本系列文章將使用 Mac OS X 來做操作，因此可能會有些地方與 Linux 不相同！</p>
+</blockquote>
+
+<h2 id="列出檔案與目錄-ls">列出檔案與目錄 (ls)</h2>
+
+<p>我們第一個要來看的指令就是最常見大家也應該都很熟悉的 <code class="language-plaintext highlighter-rouge">ls</code>。 由於 Unix 指令大多都是某個英文單字的縮寫，個人覺得了解背後代表的意義會比較容易清楚這個指令在做些什麼，所以都會自動腦補背後的單字。</p>
+
+<p>像是 <code class="language-plaintext highlighter-rouge">ls</code> 就是 list (列出) 的縮寫，使用方法為：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;</span> <span class="nb">ls </span>檔案或目錄名稱
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">ls</code> 能夠列出目錄下的內容，如果沒帶任何參數時會預設為目前所在目錄。
+當參數為檔案時，會僅列出該檔案，我們可以運用這個特性來查看檔案有沒有存在某個目錄裡。</p>
+
+<h3 id="列出隱藏檔">列出隱藏檔</h3>
+
+<p>在 <code class="language-plaintext highlighter-rouge">ls</code> 後面加入 <code class="language-plaintext highlighter-rouge">-a</code> 的選項後，可將隱藏檔也一併列出：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;</span> <span class="nb">ls</span> <span class="nt">-a</span> 檔案或目錄名稱
+</code></pre></div></div>
+
+<p>縮寫的腦補：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>-a: all (全部)
+</code></pre></div></div>
+
+<p>列出內容開頭是 <code class="language-plaintext highlighter-rouge">.</code> 的檔案大多都是隱藏檔喔。</p>
+
+<h3 id="列出詳細內容">列出詳細內容</h3>
+
+<p>當想顯示更多檔案資訊可在 <code class="language-plaintext highlighter-rouge">ls</code> 後面加入 <code class="language-plaintext highlighter-rouge">-l</code> 的選項：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;</span> <span class="nb">ls</span> <span class="nt">-l</span> 檔案或目錄名稱
+</code></pre></div></div>
+
+<p>縮寫的腦補：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>-l: long (更長的內容?)
+</code></pre></div></div>
+
+<p>讓我們來看看這個詳細內容長得如何吧，以下是範例：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">-rw-r--r--</span>  1 Rhadow  staff   0 11 21 12:52 test.js
+drwxr-xr-x  2 Rhadow  staff  68 11 21 12:52 testDir
+</code></pre></div></div>
+
+<p>以中間空白為區隔，我們可將上面的內容分為九列，他們分表代表著：</p>
+
+<ol>
+  <li>權限</li>
+  <li>連結 (連結到此檔案的 i-node，預知詳情請上網查詢)</li>
+  <li>檔案/目錄擁有者</li>
+  <li>檔案/目錄的群組</li>
+  <li>檔案大小 (單位為 bytes)</li>
+  <li>檔案/目錄建立月份</li>
+  <li>檔案/目錄建立日期</li>
+  <li>檔案/目錄建立時間</li>
+  <li>檔案/目錄名稱</li>
+</ol>
+
+<p>從以上訊息我們可以得知 <code class="language-plaintext highlighter-rouge">test.js</code> 這個檔案是屬於 Rhadow 的，它的所屬群組為 staff，並且是在 11 月 21 日的下午 12:52 分建立的。等等？群組跟權限是什麼東西？讓我們繼續看下去。</p>
+
+<h3 id="檔案權限">檔案權限</h3>
+
+<p>在 Unix 的系統中，有使用者與群組的概念。因此我們可以簡單地將使用某檔案的人歸類為以下三類：</p>
+
+<ul>
+  <li>檔案擁有者</li>
+  <li>與檔案在同一個群組的使用者</li>
+  <li>其他使用者 (不是檔案擁有者也不在檔案所屬群組內的人)</li>
+</ul>
+
+<p>簡單來說，假設你與朋友們有個聊天群組，你在群組內分享了某個檔案，這時：</p>
+
+<ul>
+  <li>你就是檔案擁有者</li>
+  <li>在聊天群組的朋友們就是與檔案在同一個群組的使用者</li>
+  <li>其他不在群組裡的人們就是其他使用者</li>
+</ul>
+
+<p>在了解使用者與群組之後，我們來看看剛剛的第一列英文字在表達些什麼吧。</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">-rw-r--r--</span>  1 Rhadow  staff   0 11 21 12:52 test.js
+drwxr-xr-x  2 Rhadow  staff  68 11 21 12:52 testDir
+</code></pre></div></div>
+
+<p>代表權限的那串英文總共有十個字母，第一個字母代表類型：</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">-</code> 代表檔案</li>
+  <li><code class="language-plaintext highlighter-rouge">d</code> 代表目錄 (directory)</li>
+</ul>
+
+<p>接下來的九個字母請將它們分為三組，每三個字一組：</p>
+
+<ul>
+  <li>第一組：檔案擁有者的權限</li>
+  <li>第二組：與檔案在同一個群組的使用者的權限</li>
+  <li>第三組：其他使用者的權限</li>
+</ul>
+
+<p>而每一組內的三個字母則代表：</p>
+
+<ul>
+  <li>第一個字母：讀取權限 (<strong>r</strong>ead)</li>
+  <li>第二個字母：寫入/修改權限 (<strong>w</strong>rite)</li>
+  <li>第三個字母：執行權限 (e<strong>x</strong>ecute)</li>
+</ul>
+
+<p>這三個字母的順序是固定而且不會省略的，因此當某檔案無寫入權限但可讀可執行時會顯示成 <code class="language-plaintext highlighter-rouge">r-x</code> 而不是 <code class="language-plaintext highlighter-rouge">rx</code>。</p>
+
+<p>現在再回到範例就可清楚的解讀權限那列的意思了，舉例來說：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">-rw-r--r--</span>  1 Rhadow  staff   0 11 21 12:52 test.js
+</code></pre></div></div>
+
+<ul>
+  <li>test.js 是個檔案</li>
+  <li>對檔案擁有者來說，他可以對這檔案做讀取與寫入的動作但無法執行它 (rw-)</li>
+  <li>與檔案在同一個群組的使用者只可讀取，不能做其他動作 (r–)</li>
+  <li>其他使用者一樣只可讀取，不能做其他動作 (r–)</li>
+</ul>
+
+<p>當然，像 Unix 這麼複雜的系統不可能將所有動作濃縮成三個字母來分類，因此這三個位置有可能出現像是 <code class="language-plaintext highlighter-rouge">s</code> 或 <code class="language-plaintext highlighter-rouge">t</code> 的其他字母，而類型也不會只有 <code class="language-plaintext highlighter-rouge">-</code> 與 <code class="language-plaintext highlighter-rouge">d</code> 而已喔。有興趣的人可以自行去網路上查看其他字母代表的意義。</p>
+
+<h2 id="改變檔案權限">改變檔案權限</h2>
+
+<p>了解如何讀懂檔案權限後，接下來來看看有哪些指令可以讓我們修改這些權限吧。</p>
+
+<h3 id="改變檔案擁有者-chown">改變檔案擁有者 (chown)</h3>
+
+<p>使用方法：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;</span> <span class="nb">chown </span>新擁有者名稱 檔案或目錄名稱
+<span class="o">&gt;</span> <span class="nb">chown </span>新擁有者名稱:新群組名稱 檔案或目錄名稱
+</code></pre></div></div>
+
+<p>縮寫的腦補：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>chown: change owner (改變擁有者)
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">chown</code> 有兩種使用方法，一種是單純改變擁有者，另一種則是可以同時修改擁有者與群組。</p>
+
+<h3 id="改變檔案所屬群組-chgrp">改變檔案所屬群組 (chgrp)</h3>
+
+<p>使用方法：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;</span> <span class="nb">chgrp </span>新群組名稱 檔案或目錄名稱
+</code></pre></div></div>
+
+<p>縮寫的腦補：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>chgrp: change group (改變群組)
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">chgrp</code> 使用上與 <code class="language-plaintext highlighter-rouge">chown</code> 類似，但修改的是所屬群組。</p>
+
+<h3 id="修改檔案權限-chmod">修改檔案權限 (chmod)</h3>
+
+<p>使用方法：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;</span> <span class="nb">chmod </span>數個<span class="o">(</span>0-7<span class="o">)</span>的數字 檔案或目錄名稱
+<span class="o">&gt;</span> <span class="nb">chmod </span>字串 檔案或目錄名稱
+</code></pre></div></div>
+
+<p>縮寫的腦補：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>chmod: change mode (改變模式)
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">chmod</code> 有兩種使用方法，分別是數字模式與文字模式。</p>
+
+<h4 id="數字模式">數字模式</h4>
+
+<p>在數字模式，上述講到的權限 (<code class="language-plaintext highlighter-rouge">r</code>, <code class="language-plaintext highlighter-rouge">w</code>, <code class="language-plaintext highlighter-rouge">x</code>) 會被分類為以下數字：</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">r</code>: 4</li>
+  <li><code class="language-plaintext highlighter-rouge">w</code>: 2</li>
+  <li><code class="language-plaintext highlighter-rouge">x</code>: 1</li>
+  <li><code class="language-plaintext highlighter-rouge">-</code>: 0</li>
+</ul>
+
+<p>直接以實例說明比較清楚：</p>
+
+<p>假如我們想將 <code class="language-plaintext highlighter-rouge">test.js</code> 的權限設為 <code class="language-plaintext highlighter-rouge">rwxrw-r--</code>，計算如下：</p>
+
+<p><code class="language-plaintext highlighter-rouge">rwx</code> : 4 + 2 + 1 = 7</p>
+
+<p><code class="language-plaintext highlighter-rouge">rw-</code> : 4 + 2 + 0 = 6</p>
+
+<p><code class="language-plaintext highlighter-rouge">r--</code> : 4 + 0 + 0 = 4</p>
+
+<p>接著把數字帶入指令：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&gt; chmod 764 test.js
+</code></pre></div></div>
+
+<h4 id="文字模式">文字模式</h4>
+
+<p>在文字模式，使用者與群組將會被以下字母代表:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">u</code>: 檔案擁有者 (之前是 owner，到這裡變<strong>u</strong>ser了…)</li>
+  <li><code class="language-plaintext highlighter-rouge">g</code>: 與檔案在同一個群組的使用者 (<strong>g</strong>roup)</li>
+  <li><code class="language-plaintext highlighter-rouge">o</code>: 其他使用者 (<strong>o</strong>thers)</li>
+  <li><code class="language-plaintext highlighter-rouge">a</code>: 以上所有人 (<strong>a</strong>ll)</li>
+</ul>
+
+<p>同時也會有三種動作：</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">+</code>: 增加</li>
+  <li><code class="language-plaintext highlighter-rouge">-</code>: 刪除</li>
+  <li><code class="language-plaintext highlighter-rouge">=</code>: 指定</li>
+</ul>
+
+<p>組合範例：</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">動作字串</th>
+      <th>意義</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">a+r</td>
+      <td>所有人都增加讀取權限</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">o-rx</td>
+      <td>刪除其他使用者的讀取與執行權限</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">+r</td>
+      <td>當前面沒帶入目標時，預設為全體，等同於 <code class="language-plaintext highlighter-rouge">a+r</code></td>
+    </tr>
+    <tr>
+      <td style="text-align: center">u=x,g=r,o=</td>
+      <td>擁有者只可執行，群組只可讀取，其他人無法執行任何動作</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>實際範例：</p>
+
+<p>我們想將 <code class="language-plaintext highlighter-rouge">test.js</code> 群組 (group) 的權限改為可執行時可使用下列字串：</p>
+
+<p><code class="language-plaintext highlighter-rouge">g+x</code></p>
+
+<p>執行結果：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&gt; ls -l test.js
+-rw-r--r--  1 Rhadow  staff   0 11 21 12:52 test.js
+
+&gt; chmod g+x test.js
+
+&gt; ls -l test.js
+-rw-r-xr--  1 Rhadow  staff   0 11 21 12:52 test.js
+</code></pre></div></div>
+
+<p>文字模式可以讓我們在不改動其他權限的狀況下修改特定目標的權限。</p>
+
+<h4 id="改變目錄底下所有內容的權限">改變目錄底下所有內容的權限</h4>
+
+<p>以上提到的三個指令都可以使用 <code class="language-plaintext highlighter-rouge">-R</code> 選項。</p>
+
+<p>縮寫的腦補：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>-R: Recursive (遞歸)
+</code></pre></div></div>
+
+<p>使用在目錄上時會將所有子目錄內的權限也一併修改。</p>
+
+<h2 id="切換目錄-cd">切換目錄 (cd)</h2>
+
+<p>本篇最後一個說明的指令就是 <code class="language-plaintext highlighter-rouge">cd</code> 囉，相信這個也是大家都熟知的指令，使用方式為：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&gt; cd 目標目錄 (可使用相對或絕對路徑)
+</code></pre></div></div>
+
+<p>比較特別的是我們可以使用以下符號來切換到特定的目錄去：</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">~</code>: 到家目錄 (home directory)</li>
+  <li><code class="language-plaintext highlighter-rouge">-</code>: 回到上一個目錄 (類似瀏覽器的上一頁，也就是你剛剛所在的目錄)</li>
+</ul>
+
+<p>當沒有指定目標目錄時，預設是回到家目錄喔。</p>
+
+:ET

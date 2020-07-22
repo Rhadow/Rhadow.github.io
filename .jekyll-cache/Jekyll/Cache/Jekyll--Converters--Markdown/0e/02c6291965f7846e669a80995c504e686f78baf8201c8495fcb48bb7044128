@@ -1,0 +1,11 @@
+I"ç<p>Welcome to Rhadow‚Äôs Tech note! This is a place to share my knowledge and experience on web development. The articles will be focus around any JavaScript related technology.</p>
+
+<p>This blog is made by Jekyll and using <a href="https://github.com/poole/hyde">Hyde</a> theme as basic theme. If you have any suggestions or questions about this blog, feel free to contact me.</p>
+
+<div class="message">
+  <img class="profile" src="/public/profile.png" alt="profile-image" />
+  <div class="intro-message">
+      Hello, I'm Rhadow. A software engineer curious about how nature works. Dreaming to simulate our world in computer one day. 
+  </div>
+</div>
+:ET
