@@ -3,3 +3,4 @@ title: robots
 ---
 User-agent: *
 Sitemap: <{{site.url}}/sitemap.xml>
+Disallow: /temp-posts/
